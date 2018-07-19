@@ -12,6 +12,13 @@ view: users {
     sql: ${TABLE}.age ;;
   }
 
+  dimension: age_tier {
+    type: tier
+    tiers: [0,18, 25, 35, 45, 55, 65]
+    style: integer
+    sql: ${age} ;;
+  }
+
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
@@ -85,5 +92,17 @@ view: users {
   measure: count {
     type: count
     drill_fields: [id, first_name, last_name, events.count, order_items.count]
+  }
+
+  measure: youngest {
+    label: "Youngest Customer"
+    type:  min
+    sql: ${age} ;;
+  }
+
+  measure: oldest {
+    label: "Oldest Customer"
+    type: max
+    sql: ${age} ;;
   }
 }

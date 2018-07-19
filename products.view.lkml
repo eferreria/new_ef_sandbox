@@ -57,7 +57,32 @@ dimension: retail_price_range {
   }
 
   measure: count {
-    type: count
-    drill_fields: [id, name, distribution_centers.id, distribution_centers.name, inventory_items.count]
+    label: "Product Count"
+    type: count_distinct
+    sql: ${id} ;;
+    drill_fields: [department, category, id, name, inventory_items.stock_count, inventory_items.sold_count]
   }
+
+  measure: category_count {
+      type: count_distinct
+      sql: ${category} ;;
+  }
+
+  measure: gross_revenue {
+      type: sum
+      sql: ${retail_price} ;;
+  }
+
+  measure: cogs {
+      label: "Cost of Goods"
+      type: sum
+      sql: ${cost} ;;
+  }
+
+  measure: profit {
+      type: sum
+      sql: ${retail_price}-${cost};;
+  }
+
+
 }
