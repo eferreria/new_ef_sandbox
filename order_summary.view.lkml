@@ -38,3 +38,7 @@ view: order_summary {
     fields: [order_id, count]
   }
 }
+
+view: another_source {
+  sql_table_name: order_items ;;
+}

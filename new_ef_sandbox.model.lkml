@@ -107,3 +107,20 @@ explore: us_orders {
     relationship: many_to_one
   }
 }
+view: t {derived_table:{sql:select null;;}}
+explore: km_test {
+  view_name: t
+  join: order_summary {
+    type: left_outer
+    relationship: one_to_one
+    sql:  left join
+    {% if order_summary.order_item_id._in_query %}
+${order_summary.SQL_TABLE_NAME}   as order_summary
+    {% else %}
+${another_source.SQL_TABLE_NAME}    as order_summary
+    {% endif %}
+    on order_summary.id=t.SOMETHING_ELSE__HAHA
+    ;;
+#     sql_table_name: ${another_source.SQL_TABLE_NAME} ;;
+  }
+}
