@@ -4,7 +4,7 @@ connection: "thelook_events_redshift"
 include: "*.view"
 
 # include all the dashboards
-#include: "*.dashboard"
+include: "*.dashboard"
 
 datagroup: new_eric_sandbox_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
@@ -22,7 +22,6 @@ explore: products {
     relationship: one_to_many
   }
 }
-
 
 explore: inventory_items {
   join: products {
@@ -64,12 +63,10 @@ explore: order_items {
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
   }
+
 }
 
-explore: users {
-  persist_with: new_eric_sandbox_default_datagroup
-  label: "Customers"
-}
+
 
 view: us_orders {
   extends: [order_items]

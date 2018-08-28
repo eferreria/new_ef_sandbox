@@ -111,4 +111,9 @@ view: order_items {
       inventory_items.product_name
     ]
   }
+
+  dimension: check_join {
+    type: string
+    sql: {% if users._in_query %} 'Users' {% else %} 'Users Not Selected' {% endif %} ;;
+  }
 }

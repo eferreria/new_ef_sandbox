@@ -131,6 +131,13 @@ measure: average_days_in_inventory {
   value_format: "#,##0.0"
 }
 
+measure: total_product_retail_price {
+  type: sum
+  sql: ${product_retail_price} ;;
+  hidden: yes
+}
+
+
 measure: total_profit {
   type: sum
   description: "Product Retail Price less cost"
