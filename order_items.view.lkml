@@ -61,6 +61,7 @@ view: order_items {
   }
 
   dimension: sale_price {
+    hidden: yes
     type: number
     sql: ${TABLE}.sale_price ;;
   }
@@ -84,6 +85,11 @@ view: order_items {
     sql: ${TABLE}.status ;;
   }
 
+  dimension: is_cancelled_or_returned {
+    type: yesno
+    sql:  ${status} in ('Cancelled', 'Returned');;
+  }
+
   dimension: user_id {
     type: number
     # hidden: yes
@@ -91,15 +97,141 @@ view: order_items {
   }
 
   measure: count {
+    label: "Total Order Items Count"
     type: count
     drill_fields: [detail*]
   }
 
-  measure: sales {
+  measure: ct_order_items_completed {
+    label: "Total Order Items Count excl Cancelled and Returned"
+    type: count
+    filters: {
+      field: is_cancelled_or_returned
+      value: "No"
+    }
+    drill_fields: [detail*]
+  }
+
+# MCS - Total Sale Price
+  measure: total_sales {
+    label: "Total Sale Price"
+    description: "Total sales from items sold"
     type: sum
     sql: ${sale_price} ;;
     value_format: "$ #,##0.00"
   }
+
+  measure: total_gross_revenue {
+    description: "Titak revenue from completed sales (cancelled and returned orders excluded)"
+    type: sum
+    sql: ${sale_price} ;;
+    value_format: "$ #,##0.00"
+    filters: {
+      field: is_cancelled_or_returned
+      value: "No"
+    }
+  }
+
+  measure:  avg_sales{
+    label: "Average Sale Price"
+    description: "Average sale price of items sold"
+    type: average
+    sql: ${sale_price} ;;
+    value_format: "$ #,##0.00"
+  }
+
+  measure: total_cost {
+    description: "Total cost of items sold from inventory"
+    type: sum
+    sql: ${inventory_items.cost} ;;
+    value_format: "$ #,##0.00"
+  }
+
+  measure: avg_cost {
+    description: "Average cost of items sold from inventory"
+    type: average
+    label: "Average Cost"
+    sql: ${inventory_items.cost} ;;
+    value_format: "$ #,##0.00"
+  }
+
+  measure: gross_margin {
+    label: "Total Gross Margin Amount"
+    type: number
+    description: "Total difference between the total revenue from completed sales and the cost of the goods that were sold"
+    sql: ${total_gross_revenue} - ${total_cost} ;;
+    value_format: "$ #,##0.00"
+  }
+
+  measure: avg_gross_margin {
+    label: "Average Gross Margin"
+    type: number
+    description: "Average difference between the total revenue from completed sales and the cost of the goods that were sold"
+    sql: ${gross_margin}/nullif(${ct_order_items_completed},0);;
+    value_format: "$ #,##0.00"
+  }
+
+  measure: gross_margin_pct {
+    label: "Gross Margin %"
+    description: "Total Gross Margin Amount / Total Revenue"
+    type: number
+    sql: ${gross_margin}/${total_sales} ;;
+    value_format_name: percent_2
+  }
+
+  measure: items_returned {
+    label: "Number of Items Returned"
+    description: "Number of items that were returned bny dissatisfied customers"
+    type: count
+    filters: {
+      field: status
+      value: "Returned"
+    }
+  }
+
+  measure: item_return_rate {
+    label: "Item Return Rate %"
+    description: "Number of Items Returned / total number of items sold"
+    type: number
+    sql: ${items_returned}/${count} ;;
+    value_format_name: percent_2
+  }
+
+  measure: cust_returning_items {
+    label: "Number of Customers Returning Items"
+    description: "Number of users who have returned an item at some point"
+    type: count_distinct
+    sql: ${user_id} ;;
+    filters: {
+      field: status
+      value: "Returned"
+    }
+  }
+
+  measure: total_customers {
+    label: "Total Customers"
+    description: "Number of customers with orders placed."
+    type: count_distinct
+    sql: ${user_id} ;;
+  }
+
+  measure: users_with_returns_pct {
+    label: "% of Users with Returns"
+    description: "Number of customer returning items/total number of customers"
+    type: number
+    sql: 1.0*${cust_returning_items}/nullif(${total_customers},0) ;;
+    value_format_name: percent_2
+  }
+
+  measure: avg_spend_per_cust {
+    label: "Average Spend per Customer"
+    description: "Total Sale Price / total number of customers"
+    type: number
+    sql: ${total_sales}/${total_customers} ;;
+    value_format: "$ #,##0.00"
+
+  }
+
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
@@ -112,8 +244,8 @@ view: order_items {
     ]
   }
 
-  dimension: check_join {
+  dimension: field_test {
     type: string
-    sql: {% if users._in_query %} 'Users' {% else %} 'Users Not Selected' {% endif %} ;;
+    sql: {{order_id.name}} ;;
   }
 }

@@ -36,6 +36,7 @@ explore: inventory_items {
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
   }
+
 }
 
 explore: order_items {
@@ -119,8 +120,9 @@ ${order_summary.SQL_TABLE_NAME}   as order_summary
     {% else %}
 ${another_source.SQL_TABLE_NAME}    as order_summary
     {% endif %}
-    on order_summary.id=t.SOMETHING_ELSE__HAHA
+    on order_summary.order_item_id=t.SOMETHING_ELSE__HAHA
     ;;
 #     sql_table_name: ${another_source.SQL_TABLE_NAME} ;;
   }
+
 }

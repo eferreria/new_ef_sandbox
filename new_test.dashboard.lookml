@@ -277,9 +277,9 @@
     type: single_value
     fields:
     - users.age_tier
-    - order_items.sales
+    - order_items.total_sales
     filters:
-      order_items.sales: ">0"
+      order_items.total_sales: ">0"
     sorts:
     - order_items.sales desc
     limit: 500
