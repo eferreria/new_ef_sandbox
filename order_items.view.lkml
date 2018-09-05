@@ -15,6 +15,9 @@ view: order_items {
       date,
       week,
       month,
+      month_name,
+      day_of_month,
+      day_of_week,
       quarter,
       year
     ]
@@ -161,6 +164,7 @@ view: order_items {
     description: "Total difference between the total revenue from completed sales and the cost of the goods that were sold"
     sql: ${total_gross_revenue} - ${total_cost} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [products.category, detail*]
   }
 
   measure: avg_gross_margin {
@@ -229,7 +233,24 @@ view: order_items {
     type: number
     sql: ${total_sales}/${total_customers} ;;
     value_format: "$ #,##0.00"
+  }
 
+  measure: total_orders {
+    label: "Total Orders"
+    type: count_distinct
+    sql: ${order_id} ;;
+  }
+
+  measure: min_order_date {
+    type: date_time
+    label: "First Order Date"
+    sql: trunc(min(${created_date})) ;;
+  }
+
+  measure: max_order_date {
+    type: date_time
+    label: "Last Order Date"
+    sql: trunc(max(${created_date})) ;;
   }
 
   # ----- Sets of fields for drilling ------
