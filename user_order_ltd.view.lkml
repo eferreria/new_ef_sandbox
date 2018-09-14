@@ -3,6 +3,7 @@
 
 
 view: user_order_ltd {
+  label: "User Lifetime Orders"
   derived_table: {
     explore_source: order_items {
       column: total_orders {}
