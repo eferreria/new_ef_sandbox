@@ -122,12 +122,14 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: total_gross_revenue {
     description: "Titak revenue from completed sales (cancelled and returned orders excluded)"
     type: sum
     sql: ${sale_price} ;;
+    drill_fields: [detail*]
     value_format: "$ #,##0.00"
     filters: {
       field: is_cancelled_or_returned
@@ -141,6 +143,7 @@ view: order_items {
     type: average
     sql: ${sale_price} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: total_cost {
@@ -148,6 +151,7 @@ view: order_items {
     type: sum
     sql: ${inventory_items.cost} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: avg_cost {
@@ -156,6 +160,7 @@ view: order_items {
     label: "Average Cost"
     sql: ${inventory_items.cost} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: gross_margin {
@@ -173,6 +178,7 @@ view: order_items {
     description: "Average difference between the total revenue from completed sales and the cost of the goods that were sold"
     sql: ${gross_margin}/nullif(${ct_order_items_completed},0);;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: gross_margin_pct {
@@ -181,12 +187,14 @@ view: order_items {
     type: number
     sql: ${gross_margin}/${total_sales} ;;
     value_format_name: percent_2
+    drill_fields: [detail*]
   }
 
   measure: items_returned {
     label: "Number of Items Returned"
     description: "Number of items that were returned bny dissatisfied customers"
     type: count
+    drill_fields: [detail*]
     filters: {
       field: status
       value: "Returned"
@@ -199,6 +207,7 @@ view: order_items {
     type: number
     sql: ${items_returned}/${count} ;;
     value_format_name: percent_2
+    drill_fields: [detail*]
   }
 
   measure: cust_returning_items {
@@ -206,6 +215,7 @@ view: order_items {
     description: "Number of users who have returned an item at some point"
     type: count_distinct
     sql: ${user_id} ;;
+    drill_fields: [detail*]
     filters: {
       field: status
       value: "Returned"
@@ -217,6 +227,7 @@ view: order_items {
     description: "Number of customers with orders placed."
     type: count_distinct
     sql: ${user_id} ;;
+    drill_fields: [detail*]
   }
 
   measure: users_with_returns_pct {
@@ -225,6 +236,7 @@ view: order_items {
     type: number
     sql: 1.0*${cust_returning_items}/nullif(${total_customers},0) ;;
     value_format_name: percent_2
+    drill_fields: [detail*]
   }
 
   measure: avg_spend_per_cust {
@@ -233,24 +245,28 @@ view: order_items {
     type: number
     sql: ${total_sales}/${total_customers} ;;
     value_format: "$ #,##0.00"
+    drill_fields: [detail*]
   }
 
   measure: total_orders {
     label: "Total Orders"
     type: count_distinct
     sql: ${order_id} ;;
+    drill_fields: [detail*]
   }
 
   measure: min_order_date {
     type: date_time
     label: "First Order Date"
     sql: trunc(min(${created_date})) ;;
+    drill_fields: [detail*]
   }
 
   measure: max_order_date {
     type: date_time
     label: "Last Order Date"
     sql: trunc(max(${created_date})) ;;
+    drill_fields: [detail*]
   }
 
   # ----- Sets of fields for drilling ------
