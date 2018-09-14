@@ -63,10 +63,12 @@ view: user_order_fact {
 }
 
 explore: user_order_fact {
+  fields: [ALL_FIELDS*, -next_order.created_at_date]
   join: next_order {
     from: user_order_fact
     sql_on: ${next_order.user_id}=${user_order_fact.user_id}
     and ${user_order_fact.order_sequence}=${next_order.order_sequence}-1 ;;
     relationship: one_to_one
+    fields: [next_order.created_at_date, next_order.order_id]
   }
 }

@@ -40,6 +40,7 @@ explore: inventory_items {
 }
 
 explore: order_items {
+  fields: [ALL_FIELDS*, -next_order.created_at_date]
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
@@ -63,6 +64,20 @@ explore: order_items {
     fields: [distribution_centers.name]
     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
     relationship: many_to_one
+  }
+
+  join: user_order_fact {
+    type: left_outer
+    sql_on: ${user_order_fact.order_id}=${order_items.order_id} ;;
+    relationship: many_to_one
+  }
+
+  join: next_order {
+    from: user_order_fact
+    sql_on: ${next_order.user_id}=${user_order_fact.user_id}
+      and ${user_order_fact.order_sequence}=${next_order.order_sequence}-1 ;;
+    relationship: one_to_one
+    fields: [next_order.created_at_date, next_order.order_id]
   }
 
 }
