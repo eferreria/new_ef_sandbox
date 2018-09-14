@@ -115,3 +115,44 @@ explore: users {
     relationship: one_to_one
   }
 }
+
+explore: cohort_orders_example {
+  label: "Cohort Example"
+  from: order_items
+  fields: [ALL_FIELDS*, -users.cust_with_orders]
+  view_name: cohort_orders_example
+  view_label: "Order Items"
+  join: users {
+    type: left_outer
+    sql_on: ${cohort_orders_example.user_id} = ${users.id} ;;
+    relationship: many_to_one
+
+  }
+
+  join: inventory_items {
+    type: left_outer
+    sql_on: ${cohort_orders_example.inventory_item_id} = ${inventory_items.id} ;;
+    relationship: many_to_one
+  }
+
+  join: products {
+    type: left_outer
+    sql_on: ${inventory_items.product_id} = ${products.id} ;;
+    relationship: many_to_one
+  }
+
+  join: distribution_centers {
+    type: left_outer
+    fields: [distribution_centers.name]
+    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+    relationship: many_to_one
+  }
+
+  join: test_cohort {
+    view_label: "XX - Cohort Selections"
+    type: inner
+    sql_on: ${users.id} = ${test_cohort.user_id} ;;
+    relationship: many_to_one
+  }
+
+}
