@@ -154,5 +154,8 @@ explore: cohort_orders_example {
     sql_on: ${users.id} = ${test_cohort.user_id} ;;
     relationship: many_to_one
   }
+}
 
+explore: test {
+  hidden: yes
 }
