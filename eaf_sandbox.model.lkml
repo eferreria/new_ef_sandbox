@@ -13,6 +13,10 @@ datagroup: new_eric_sandbox_default_datagroup {
 
 persist_with: new_eric_sandbox_default_datagroup
 
+explore: another_product {
+  from:  products
+}
+
 explore: products {
   label: "Product Analysis"
 
@@ -39,7 +43,8 @@ explore: inventory_items {
 
 }
 
-explore: order_items {
+explore: new_order_items {
+  view_name: order_items
   fields: [ALL_FIELDS*, -next_order.created_at_date]
   join: users {
     type: left_outer
@@ -110,16 +115,16 @@ explore: users {
     sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
     relationship: many_to_one
   }
-  join: user_order_ltd {
-    sql_on: ${user_order_ltd.user_id}=${users.id} ;;
-    relationship: one_to_one
-  }
+  # join: user_order_ltd {
+  #   sql_on: ${user_order_ltd.user_id}=${users.id} ;;
+  #   relationship: one_to_one
+  # }
 }
 
 explore: cohort_orders_example {
   label: "Cohort Example"
   from: order_items
-  fields: [ALL_FIELDS*, -users.cust_with_orders]
+  fields: [ALL_FIELDS*] #, -users.cust_with_orders]
   view_name: cohort_orders_example
   view_label: "Order Items"
   join: users {

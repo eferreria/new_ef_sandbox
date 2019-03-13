@@ -24,6 +24,108 @@ view: order_items {
     sql: ${TABLE}.created_at ;;
   }
 
+  filter: period_filter {
+    type: date
+    description: "Use this filter for current period"
+  }
+
+  dimension_group: period {
+    hidden: yes
+    type: time
+    timeframes: [
+      date, week, month, quarter, year
+    ]
+    sql:{% date_start period_filter %} ;;
+  }
+
+  dimension: is_mtd {
+    type: string
+    sql: CASE
+        WHEN {% date_start period_filter %} is not null AND {% date_end period_filter %} is not null /* date ranges or in the past x days */
+          THEN
+            CASE
+              WHEN ${created_raw} >=  {% date_start period_filter %}
+                AND ${created_raw} <= {% date_end period_filter %}
+                THEN '1'
+            END
+          END;;
+  }
+
+  dimension: is_qtd {
+    type: string
+    sql: CASE
+        WHEN {% date_start period_filter %} is not null AND {% date_end period_filter %} is not null /* date ranges or in the past x days */
+          THEN
+            CASE
+              WHEN ${created_quarter} >=  ${period_quarter}
+                AND ${created_quarter} <= ${period_quarter}
+                THEN '1'
+            END
+          END;;
+  }
+
+  dimension: is_before_mtd{
+  type: yesno
+  sql:
+  (EXTRACT(DAY FROM ${TABLE}.created_at) < EXTRACT(DAY FROM current_date)
+  OR
+  (
+  EXTRACT(DAY FROM ${TABLE}.created_at) = EXTRACT(DAY FROM current_date) AND
+  EXTRACT(HOUR FROM ${TABLE}.created_at) < EXTRACT(HOUR FROM current_date)
+  )
+  OR
+  (
+  EXTRACT(DAY FROM ${TABLE}.created_at) = EXTRACT(DAY FROM current_date) AND
+  EXTRACT(HOUR FROM ${TABLE}.created_at) <= EXTRACT(HOUR FROM current_date) AND
+  EXTRACT(MINUTE FROM ${TABLE}.created_at) < EXTRACT(MINUTE FROM current_date)
+  )
+  );;
+  }
+
+  measure: orders_mtd {
+    type: count_distinct
+    sql: ${order_id} ;;
+    filters: {
+      field: is_mtd
+      value: "1"
+    }
+  }
+
+  measure: orders_qtd {
+    type: count_distinct
+    sql: ${order_id} ;;
+    filters: {
+      field: is_qtd
+      value: "1"
+    }
+  }
+
+  filter: previous_period_filter {
+    type: date
+    description: "Use this filter for period analysis"
+  }
+
+  # For Amazon Redshift
+  # ${created_raw} is the timestamp dimension we are building our reporting period off of
+  dimension: previous_period {
+    type: string
+    description: "The reporting period as selected by the Previous Period Filter"
+    sql:
+      CASE
+        WHEN {% date_start previous_period_filter %} is not null AND {% date_end previous_period_filter %} is not null /* date ranges or in the past x days */
+          THEN
+            CASE
+              WHEN ${created_raw} >=  {% date_start previous_period_filter %}
+                AND ${created_raw} <= {% date_end previous_period_filter %}
+                THEN 'This Period'
+              WHEN ${created_raw} >= DATEADD(day,-1*DATEDIFF(day,{% date_start previous_period_filter %}, {% date_end previous_period_filter %} ) + 1, DATEADD(day,-1,{% date_start previous_period_filter %} ) )
+                AND ${created_raw} <= DATEADD(day,-1,{% date_start previous_period_filter %} )
+                THEN 'Previous Period'
+            END
+          END ;;
+  }
+
+
   dimension_group: delivered {
     type: time
     timeframes: [
