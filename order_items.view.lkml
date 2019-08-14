@@ -19,6 +19,7 @@ view: order_items {
       day_of_month,
       day_of_week,
       quarter,
+      fiscal_quarter,
       year
     ]
     sql: ${TABLE}.created_at ;;

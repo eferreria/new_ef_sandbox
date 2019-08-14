@@ -11,6 +11,8 @@ datagroup: new_eric_sandbox_default_datagroup {
   max_cache_age: "4 hour"
 }
 
+fiscal_month_offset: 3
+
 persist_with: new_eric_sandbox_default_datagroup
 
 explore: another_product {

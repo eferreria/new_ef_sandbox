@@ -119,7 +119,7 @@ explore: users {
 explore: cohort_orders_example {
   label: "Cohort Example"
   from: order_items
-  fields: [ALL_FIELDS*, -users.cust_with_orders]
+#   fields: [ALL_FIELDS*]
   view_name: cohort_orders_example
   view_label: "Order Items"
   join: users {
