@@ -13,6 +13,8 @@ datagroup: new_eric_sandbox_default_datagroup {
 
 persist_with: new_eric_sandbox_default_datagroup
 
+label: "tREF Sandbox"
+
 explore: products {
   label: "Product Analysis"
 
@@ -117,6 +119,7 @@ explore: users {
 }
 
 explore: cohort_orders_example {
+  hidden: yes
   label: "Cohort Example"
   from: order_items
 #   fields: [ALL_FIELDS*]
