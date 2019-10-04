@@ -29,7 +29,7 @@ view: user_order_ltd {
     sql: nullif(${TABLE}.total_orders,0) ;;
   }
   dimension: total_gross_revenue {
-    description: "Titak revenue from completed sales (cancelled and returned orders excluded)"
+    description: "Total revenue from completed sales (cancelled and returned orders excluded)"
     value_format: "$ #,##0.00"
     type: number
   }

@@ -229,7 +229,7 @@ view: order_items {
   }
 
   measure: total_gross_revenue {
-    description: "Titak revenue from completed sales (cancelled and returned orders excluded)"
+    description: "Total revenue from completed sales (cancelled and returned orders excluded)"
     type: sum
     sql: ${sale_price} ;;
     drill_fields: [detail*]
