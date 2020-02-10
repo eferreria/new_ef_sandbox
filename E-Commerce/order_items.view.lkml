@@ -31,12 +31,20 @@ view: order_items {
   }
 
   dimension_group: period {
-    hidden: yes
+#     hidden: yes
     type: time
     timeframes: [
       date, week, month, quarter, year
     ]
     sql:{% date_start period_filter %} ;;
+  }
+
+  dimension_group: period_end {
+    type: time
+    timeframes: [
+      date, week, month, quarter, year
+    ]
+    sql: {% date_end period_filter %} ;;
   }
 
   dimension: is_mtd {
@@ -389,3 +397,52 @@ view: order_items {
     sql: {{order_id.name}} ;;
   }
 }
+
+view: column_names {
+  derived_table: {
+    sql:
+    SELECT column_name FROM information_schema.columns
+WHERE table_schema = 'public'
+and table_name = 'order_items' ;;
+  }
+
+  dimension: column_name {}
+}
+
+explore: column_names {}
+
+
+view: dynamic_dimension {
+  derived_table: {
+    sql: select {{user_input_dynamic_dim._parameter_value}} as dim_1 from public.order_items
+          where created_at between {% date_start custom_date %} and {% date_end custom_date %}
+          ;;
+  }
+
+  filter: custom_date {
+    type: date
+  }
+
+
+  parameter: user_input_dynamic_dim {
+    type: unquoted
+    suggest_explore: column_names
+    suggest_dimension: column_names.column_name
+  }
+
+  dimension: dynamic_dim {
+    sql: ${TABLE}.dim_1  ;;
+  }
+
+  measure: count {
+    type: count
+  }
+
+  measure: sum {
+    type: sum
+    sql: ${dynamic_dim} ;;
+  }
+
+}
+
+explore: dynamic_dimension {}
