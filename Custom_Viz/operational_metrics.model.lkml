@@ -1,5 +1,5 @@
 connection: "biquery_publicdata_standard_sql"
-
+# Making changes here 2/10
 
 include: "*.view.lkml"                       # include all views in this project
 # include: "*.dashboard"
