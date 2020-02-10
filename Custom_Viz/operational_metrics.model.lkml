@@ -3,6 +3,7 @@ connection: "biquery_publicdata_standard_sql"
 
 
 #Adding more changes, changed fiscal offset
+# Error
 
 include: "*.view.lkml"                       # include all views in this project
 # include: "*.dashboard"
