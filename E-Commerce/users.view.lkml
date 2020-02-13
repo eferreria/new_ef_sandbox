@@ -1,16 +1,17 @@
 
 view: users {
- # sql_table_name: public.users ;;
-derived_table: {
-  sql:
-  select * from public.users
-  where
-  {% condition city_select %} users.city {% endcondition %}
-  ;;
-}
+ sql_table_name: public.users ;;
+# derived_table: {
+#   sql:
+#   select * from public.users
+#   where
+#   {% condition city_select %} users.city {% endcondition %}
+#   ;;
+# }
 
 
   dimension: id {
+    primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
