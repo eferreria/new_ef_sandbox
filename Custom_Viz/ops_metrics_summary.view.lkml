@@ -564,10 +564,17 @@ view: operational_metrics {
     }
 
     measure: old_site_status {
+
+      link: {
+        label: "Drill Down to See Customers"
+        url: "/explore/eaf_sandbox/users?fields=users.id,users.name&f[users.state]={{
+        _filters['users.state'] | url_encode }}"
+        icon_url: "https://looker.com/favicon.ico"
+      }
 #   hidden: yes
     type: count
     html:
-    <div class="container" style="width:400px; font-size:16px; border-bottom: .1em solid {{color1._value}}; padding: 12px 12px 12px 12px; margin:0; align:center">
+    <div class="container" style="width:auto; font-size:16px; border-bottom: .1em solid {{color1._value}}; padding: 12px 12px 12px 12px; margin:0; align:center">
     <table style="border:0px; width:100%" class="table-condensed">
       <tr style="height:10px">
          <td colspan=2 style="text-align:left; height:10px; {{no_padding_margin._value}}">
@@ -633,6 +640,19 @@ view: operational_metrics {
       </tr>
    </table>
 </div>;;
+  }
+
+  measure: auto_size_status {
+
+#   hidden: yes
+    type: count
+    html:
+    <div class="container" style="width:auto; height:auto; background-color:blue; padding: 12px 12px 12px 12px; margin:0; align:center display:flex">
+    <div  class="width:90%; margin: 12px 12px 12px 12px; font-size:15vw;">
+   I will autoscale
+  </div>
+    </div>
+    ;;
   }
 
   measure: service_status {

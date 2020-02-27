@@ -77,6 +77,11 @@ view: users {
     sql: ${TABLE}.first_name ;;
   }
 
+  dimension: full_name {
+    sql: ${id} ;;
+    html: {{last_name._value}}, {{first_name._value}} ;;
+  }
+
   dimension: gender {
     type: string
     sql: ${TABLE}.gender ;;
@@ -145,8 +150,15 @@ view: users {
   measure: count {
     label: "Total Customers"
     type: count
-    drill_fields: [id, first_name, last_name, events.count, order_items.count]
+     drill_fields: [id, first_name, last_name, events.count, order_items.count]
+    link: {
+      label: "Example"
+      url: "/explore/eaf_sandbox/users?fields=users.id,users.name&f[users.state]={{
+        _filters['users.state'] | url_encode }}"
+    }
+    html:  <a style="font-size: 40px;" href="{{link}}" target="_self"><font color="blue">{{value}}</font></a> ;;
   }
+
 
   measure: average_days_since_signup {
     type: average

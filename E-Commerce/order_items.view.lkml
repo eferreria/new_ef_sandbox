@@ -199,6 +199,20 @@ view: order_items {
     sql: ${TABLE}.status ;;
   }
 
+  filter: status_filter {
+    suggest_dimension: status
+    type: string
+  }
+
+  dimension: user_status_choice{
+    type: string
+    sql: case when {% condition status_filter %} ${status} {% endcondition %}
+    then ${status}
+    else 'All Other Status'
+    end
+    ;;
+  }
+
   dimension: is_cancelled_or_returned {
     type: yesno
     sql:  ${status} in ('Cancelled', 'Returned');;

@@ -33,13 +33,14 @@ view: test_cohort {
   dimension: selected_cohort_brand {
     type: string
     sql: case when {% condition cohort_brand %} products.brand {% endcondition %}
-    then ${products.brand} else 'Rest of Population' end;;
+    then ${products.brand} else 'All Other Brands' end
+    ;;
   }
 
   dimension: selected_cohort_city {
     type: string
     sql: case when {% condition cohort_city %} users.city {% endcondition %}
-      then ${users.city} else 'Rest of Population' end;;
+      then ${users.city} else 'All Other Cities' end;;
   }
 
  }

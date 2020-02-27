@@ -155,9 +155,9 @@ explore: cohort_orders_example {
     relationship: many_to_one
   }
 
-  join: test_cohort {
+  join: test_cohort  {
     view_label: "XX - Cohort Selections"
-    type: inner
+    type: left_outer
     sql_on: ${users.id} = ${test_cohort.user_id} ;;
     relationship: many_to_one
   }
