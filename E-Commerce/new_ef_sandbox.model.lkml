@@ -104,17 +104,32 @@ explore: order_items {
 # }
 
 explore: users {
-  join: order_items {
-    sql_on: ${order_items.user_id}=${users.id};;
+#   join: order_items {
+#     sql_on: ${order_items.user_id}=${users.id};;
+#     relationship: many_to_one
+#   }
+#   join: inventory_items {
+#     sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
+#     relationship: many_to_one
+#   }
+#   join: user_order_ltd {
+#     sql_on: ${user_order_ltd.user_id}=${users.id} ;;
+#     relationship: one_to_one
+#   }
+  join: user_state_summary {
+    sql_on: ${user_state_summary.selected_dimension} =
+
+{% if users.user_selected_dimension._parameter_value == 'city' %}
+      ${users.city}
+    {% elsif users.user_selected_dimension._parameter_value == 'state' %}
+      ${users.state}
+    {% else %}
+      ${users.country}
+    {% endif %}
+
+    ;;
     relationship: many_to_one
-  }
-  join: inventory_items {
-    sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
-    relationship: many_to_one
-  }
-  join: user_order_ltd {
-    sql_on: ${user_order_ltd.user_id}=${users.id} ;;
-    relationship: one_to_one
+
   }
 }
 

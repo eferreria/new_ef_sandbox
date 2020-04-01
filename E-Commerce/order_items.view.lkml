@@ -1,6 +1,8 @@
 view: order_items {
   sql_table_name: public.order_items ;;
 
+  drill_fields: [order_id, created_date]
+
   dimension: id {
     primary_key: yes
     type: number
@@ -423,7 +425,7 @@ and table_name = 'order_items' ;;
   dimension: column_name {}
 }
 
-explore: column_names {}
+explore: column_names { hidden:yes}
 
 
 view: dynamic_dimension {

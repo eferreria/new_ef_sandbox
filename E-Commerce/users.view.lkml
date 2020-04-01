@@ -1,6 +1,7 @@
 
 view: users {
  sql_table_name: public.users ;;
+drill_fields: [id, created_date]
 # derived_table: {
 #   sql:
 #   select * from public.users
@@ -8,6 +9,34 @@ view: users {
 #   {% condition city_select %} users.city {% endcondition %}
 #   ;;
 # }
+
+  parameter: user_selected_dimension {
+    type: unquoted
+    allowed_value: {
+      label: "City"
+      value: "city"
+    }
+    allowed_value: {
+      label: "State"
+      value: "state"
+    }
+    allowed_value: {
+      label: "Country"
+      value: "country"
+    }
+  }
+
+  dimension: selected_dimension {
+    sql:
+    {% if user_selected_dimension._parameter_value == 'city' %}
+      ${city}
+    {% elsif user_selected_dimension._parameter_value == 'state' %}
+      ${state}
+    {% else %}
+      ${country}
+    {% endif %}
+    ;;
+  }
 
 
   dimension: id {
@@ -17,6 +46,7 @@ view: users {
   }
 
   filter: city_select {
+    hidden: yes
     type: string
     suggest_dimension: city
   }
@@ -151,12 +181,12 @@ view: users {
     label: "Total Customers"
     type: count
      drill_fields: [id, first_name, last_name, events.count, order_items.count]
-    link: {
-      label: "Example"
-      url: "/explore/eaf_sandbox/users?fields=users.id,users.name&f[users.state]={{
-        _filters['users.state'] | url_encode }}"
-    }
-    html:  <a style="font-size: 40px;" href="{{link}}" target="_self"><font color="blue">{{value}}</font></a> ;;
+#     link: {
+#       label: "Example"
+#       url: "/explore/eaf_sandbox/users?fields=users.id,users.name&f[users.state]={{
+#         _filters['users.state'] | url_encode }}"
+#     }
+#     html:  <a style="font-size: 40px;" href="{{link}}" target="_self"><font color="blue">{{value}}</font></a> ;;
   }
 
 
@@ -190,6 +220,7 @@ view: users {
   }
 
   parameter: code_type_picker_1 {
+    hidden: yes
     description: "Select claim code type for filtering. Use in conjunction with Code Value 1"
     type: string
     default_value: "0"
