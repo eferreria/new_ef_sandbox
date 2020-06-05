@@ -6,12 +6,18 @@ include: "*.view"
 # include all the dashboards
 include: "*.dashboard"
 
+
+
 datagroup: new_eric_sandbox_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "4 hour"
 }
 
 fiscal_month_offset: 3
+
+map_layer: gender_map_layer {
+  file: "gender_map.topojson"
+}
 
 persist_with: new_eric_sandbox_default_datagroup
 

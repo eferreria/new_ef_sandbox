@@ -15,6 +15,10 @@ persist_with: new_eric_sandbox_default_datagroup
 
 label: "tREF Sandbox"
 
+map_layer: gender_map_layer {
+  file: "gender_map.topojson"
+}
+
 explore: products {
   label: "Product Analysis"
 

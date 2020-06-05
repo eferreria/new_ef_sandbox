@@ -1,4 +1,6 @@
 
+include: "..//E-Commerce/order*.view"
+
 view: users {
  sql_table_name: public.users ;;
 drill_fields: [id, created_date]
@@ -115,6 +117,8 @@ drill_fields: [id, created_date]
   dimension: gender {
     type: string
     sql: ${TABLE}.gender ;;
+
+    map_layer_name: gender_map_layer
   }
 
   dimension: last_name {
@@ -263,3 +267,24 @@ drill_fields: [id, created_date]
   }
 
 }
+
+# view: users_extended {
+#   extends: [users]
+# }
+
+# explore: extended_orders {
+#   from: order_items
+
+# #OPTION A
+#   join: users {
+#     from: users_extended
+#     sql_on: ${extended_orders.user_id} = ${users.id} ;;
+#   }
+
+# #OPTION B
+#   join: users_extended {
+#     view_label: "Users"
+#     sql_on: ${extended_orders.user_id} = ${users.id} ;;
+#   }
+
+# }

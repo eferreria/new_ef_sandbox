@@ -24,6 +24,8 @@ view: inventory_items {
       year
     ]
     sql: ${TABLE}.created_at ;;
+    skip_drill_filter: no
+    drill_fields: [created_year, created_quarter, created_month, created_week, created_date]
   }
 
   dimension: product_brand {
