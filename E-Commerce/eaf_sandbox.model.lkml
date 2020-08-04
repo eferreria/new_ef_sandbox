@@ -16,6 +16,8 @@ datagroup: new_eric_sandbox_default_datagroup {
 fiscal_month_offset: 3
 
 map_layer: gender_map_layer {
+  format: topojson
+  property_key: "sex"
   file: "gender_map.topojson"
 }
 
