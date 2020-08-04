@@ -28,7 +28,7 @@ explore: another_product {
 }
 
 explore: products {
-  label: "Product Analysis - QA Branch"
+  label: "Product Analysis - QA Branch with Pull Requests"
 
   join: inventory_items {
     type: inner
