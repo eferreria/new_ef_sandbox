@@ -28,7 +28,7 @@ explore: another_product {
 }
 
 explore: products {
-  label: "Product Analysis - Changed"
+  label: "Product Analysis - QA Branch"
 
   join: inventory_items {
     type: inner
@@ -54,6 +54,7 @@ explore: products {
 # }
 
 explore: new_order_items {
+  label: "New Order Items - QA Branch"
   view_name: order_items
   fields: [ALL_FIELDS*, -next_order.created_at_date]
   join: users {
