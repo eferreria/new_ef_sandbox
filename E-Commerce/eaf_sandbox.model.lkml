@@ -133,7 +133,7 @@ explore: users {
 }
 
 explore: cohort_orders_example {
-  label: "Cohort Example"
+  label: "Cohort Example - QA Branch"
   from: order_items
   fields: [ALL_FIELDS*] #, -users.cust_with_orders]
   view_name: cohort_orders_example
