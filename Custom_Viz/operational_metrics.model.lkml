@@ -3,6 +3,8 @@ connection: "biquery_publicdata_standard_sql"
 # Another change
 
 
+
+
 #Adding more changes, changed fiscal offset
 
 include: "*.view.lkml"                       # include all views in this project
