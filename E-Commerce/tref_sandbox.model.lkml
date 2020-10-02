@@ -6,7 +6,7 @@ include: "./dashboards/*.dashboard"
 include: "./code_tests/*.view"
 
 datagroup: new_eric_sandbox_default_datagroup {
-  max_cache_age: "4 hour"
+  max_cache_age: "8 hour"
 }
 
 persist_with: new_eric_sandbox_default_datagroup
