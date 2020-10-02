@@ -462,3 +462,29 @@ view: dynamic_dimension {
 }
 
 explore: dynamic_dimension {}
+
+
+explore: order_items_pagination {
+  fields: [page, number_per_page, detail*]
+}
+
+view: order_items_pagination {
+  extends: [order_items]
+
+  derived_table: {
+    sql:
+    select * from public.order_items
+
+    LIMIT {{ number_per_page._parameter_value }}
+    OFFSET {{ number_per_page._parameter_value | times: page._parameter_value | minus: number_per_page._parameter_value }} ;;
+  }
+
+  parameter: page {
+    type: number
+  }
+
+  parameter: number_per_page {
+    type: number
+  }
+
+  }
