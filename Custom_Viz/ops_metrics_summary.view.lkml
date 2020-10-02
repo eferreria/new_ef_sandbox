@@ -549,6 +549,16 @@ view: operational_metrics {
       sql: 'padding:1px 0px 1px 0px; margin:0;' ;;
     }
 
+    measure: html_fun {
+      type: count
+      html:
+      <div class="container" style="border:1px; box-shadow:1px 1px">
+      {{value}}
+      </div>
+
+      ;;
+    }
+
 # ===================================     MEASURES - STATUS MESSAGES    ================================
     measure: yearly_status {
       hidden: yes
