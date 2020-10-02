@@ -1,13 +1,11 @@
 connection: "thelook_events_redshift"
 
 # include all the views
-include: "*.view"
-
-# include all the dashboards
-include: "*.dashboard"
+include: "./ecommerce_views/*.view"
+include: "./dashboards/*.dashboard"
+include: "./code_tests/*.view"
 
 datagroup: new_eric_sandbox_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "4 hour"
 }
 
@@ -16,7 +14,7 @@ persist_with: new_eric_sandbox_default_datagroup
 label: "tREF Sandbox"
 
 map_layer: gender_map_layer {
-  file: "gender_map.topojson"
+  file: "./map/gender_map.topojson"
 }
 
 explore: products {
@@ -108,32 +106,17 @@ explore: order_items {
 # }
 
 explore: users {
-#   join: order_items {
-#     sql_on: ${order_items.user_id}=${users.id};;
-#     relationship: many_to_one
-#   }
-#   join: inventory_items {
-#     sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
-#     relationship: many_to_one
-#   }
-#   join: user_order_ltd {
-#     sql_on: ${user_order_ltd.user_id}=${users.id} ;;
-#     relationship: one_to_one
-#   }
-  join: user_state_summary {
-    sql_on: ${user_state_summary.selected_dimension} =
-
-{% if users.user_selected_dimension._parameter_value == 'city' %}
-      ${users.city}
-    {% elsif users.user_selected_dimension._parameter_value == 'state' %}
-      ${users.state}
-    {% else %}
-      ${users.country}
-    {% endif %}
-
-    ;;
+  join: order_items {
+    sql_on: ${order_items.user_id}=${users.id};;
     relationship: many_to_one
-
+  }
+  join: inventory_items {
+    sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
+    relationship: many_to_one
+  }
+  join: user_order_ltd {
+    sql_on: ${user_order_ltd.user_id}=${users.id} ;;
+    relationship: one_to_one
   }
 }
 
@@ -180,4 +163,30 @@ explore: cohort_orders_example {
 
 explore: test {
   hidden: yes
+}
+
+explore: new_inventory {
+  view_name: inventory_items
+  join: order_items {
+    type: left_outer
+    relationship: one_to_many
+    sql: left join
+          {% if order_items.id._in_query or order_items.shipped_date._in_query %} ${order_items.SQL_TABLE_NAME}
+          {% else %}
+          ${order_summary.SQL_TABLE_NAME} as order_items
+            {% endif %}
+            on order_items.inventory_item_id = inventory_items.id
+          ;;
+  }
+}
+
+explore: user_order_fact {
+  fields: [ALL_FIELDS*, -next_order.created_at_date]
+  join: next_order {
+    from: user_order_fact
+    sql_on: ${next_order.user_id}=${user_order_fact.user_id}
+      and ${user_order_fact.order_sequence}=${next_order.order_sequence}-1 ;;
+    relationship: one_to_one
+    fields: [next_order.created_at_date, next_order.order_id]
+  }
 }

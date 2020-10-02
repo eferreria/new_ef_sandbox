@@ -1,7 +1,3 @@
-include: "*.view"
-
-explore: order_summary {}
-
 view: order_summary {
   derived_table: {
     sql:
@@ -46,19 +42,4 @@ view: order_summary {
 
 view: another_source {
   sql_table_name: order_items ;;
-}
-
-explore: new_inventory {
-  view_name: inventory_items
-  join: order_items {
-    type: left_outer
-    relationship: one_to_many
-    sql: left join
-          {% if order_items.id._in_query or order_items.shipped_date._in_query %} ${order_items.SQL_TABLE_NAME}
-          {% else %}
-          ${order_summary.SQL_TABLE_NAME} as order_items
-            {% endif %}
-            on order_items.inventory_item_id = inventory_items.id
-          ;;
-  }
 }

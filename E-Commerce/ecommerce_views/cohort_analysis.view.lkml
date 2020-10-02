@@ -1,8 +1,3 @@
-
-
-
-
-
 view: test_cohort {
   derived_table: {
     sql:
