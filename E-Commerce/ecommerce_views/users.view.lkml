@@ -1,5 +1,5 @@
 
-include: "..//E-Commerce/order*.view"
+# include: "..//E-Commerce/order*.view"
 
 view: users {
  sql_table_name: public.users ;;
