@@ -47,11 +47,11 @@ drill_fields: [id, created_date]
     sql: ${TABLE}.id ;;
   }
 
-  filter: city_select {
-    hidden: yes
-    type: string
-    suggest_dimension: city
-  }
+  # filter: city_select {
+  #   hidden: yes
+  #   type: string
+  #   suggest_dimension: city
+  # }
 
 
   dimension: age {
