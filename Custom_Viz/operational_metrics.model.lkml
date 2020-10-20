@@ -9,6 +9,7 @@ connection: "biquery_publicdata_standard_sql"
 
 include: "*.view.lkml"                       # include all views in this project
 # include: "*.dashboard"
+include: "/E-Commerce/code_tests/string_sort_test.view"
 
 fiscal_month_offset: -6
 
