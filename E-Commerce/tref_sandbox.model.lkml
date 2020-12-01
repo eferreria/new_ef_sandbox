@@ -9,6 +9,9 @@ datagroup: new_eric_sandbox_default_datagroup {
   max_cache_age: "8 hour"
 }
 
+#can I still edit this even if I don't have model access?
+
+
 persist_with: new_eric_sandbox_default_datagroup
 
 label: "tREF Sandbox"
