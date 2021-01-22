@@ -44,7 +44,7 @@ explore: inventory_items {
 }
 
 explore: order_items {
-  fields: [ALL_FIELDS*, -next_order.created_at_date]
+  fields: [ALL_FIELDS*, -next_order.next_order_exclusions*]
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
