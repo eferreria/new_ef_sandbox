@@ -60,4 +60,9 @@ view: user_order_fact {
   set: detail {
     fields: [user_id, order_id, created_at_time, order_sequence]
   }
+
+  set: next_order_exclusions {
+    fields: [order_id, created_at_date, created_at_day_of_month, created_at_day_of_week, created_at_day_of_week_index, created_at_day_of_year
+      , created_at_hour, created_at_hour_of_day, created_at_minute]
+  }
 }

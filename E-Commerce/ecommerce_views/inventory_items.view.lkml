@@ -65,6 +65,7 @@ view: inventory_items {
   }
 
   dimension: product_sku {
+    label: "     Product SKU"
     type: string
     sql: ${TABLE}.product_sku ;;
   }

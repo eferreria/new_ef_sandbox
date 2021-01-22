@@ -19,7 +19,7 @@ view: string_sort_test {
     ;;
   }
 
-  dimension: field {}
+  dimension: field { order_by_field: nat_sort}
   dimension: nat_sort {}
   dimension: notes  {}
 }
