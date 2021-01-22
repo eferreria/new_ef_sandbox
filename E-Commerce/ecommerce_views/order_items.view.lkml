@@ -1,4 +1,4 @@
-view: order_items {
+view: order_items_base {
   sql_table_name: public.order_items ;;
 
   drill_fields: [order_id, created_date]
@@ -201,19 +201,20 @@ view: order_items {
     sql: ${TABLE}.status ;;
   }
 
-  filter: status_filter {
-    suggest_dimension: status
-    type: string
-  }
+  # filter: status_filter {
+  #   suggest_dimension: status
+  #   hidden: yes
+  #   type: string
+  # }
 
-  dimension: user_status_choice{
-    type: string
-    sql: case when {% condition status_filter %} ${status} {% endcondition %}
-    then ${status}
-    else 'All Other Status'
-    end
-    ;;
-  }
+  # dimension: user_status_choice{
+  #   type: string
+  #   sql: case when {% condition status_filter %} ${status} {% endcondition %}
+  #   then ${status}
+  #   else 'All Other Status'
+  #   end
+  #   ;;
+  # }
 
   dimension: is_cancelled_or_returned {
     type: yesno
@@ -225,6 +226,28 @@ view: order_items {
     # hidden: yes
     sql: ${TABLE}.user_id ;;
   }
+
+
+  # ----- Sets of fields for drilling ------
+  set: detail {
+    fields: [
+      id,
+      users.id,
+      users.first_name,
+      users.last_name,
+      inventory_items.id,
+      inventory_items.product_name
+    ]
+  }
+
+  dimension: field_test {
+    type: string
+    sql: {{order_id.name}} ;;
+  }
+}
+
+view: order_items {
+  extends: [order_items_base]
 
   measure: count {
     label: "Total Order Items Count"
@@ -375,7 +398,7 @@ view: order_items {
     drill_fields: [detail*]
   }
 
-  measure: total_orders_test {
+  measure: total_orders {
     label: "Total Orders - Test"
     type: count_distinct
     sql: ${order_id} ;;
@@ -396,22 +419,7 @@ view: order_items {
     drill_fields: [detail*]
   }
 
-  # ----- Sets of fields for drilling ------
-  set: detail {
-    fields: [
-      id,
-      users.id,
-      users.first_name,
-      users.last_name,
-      inventory_items.id,
-      inventory_items.product_name
-    ]
-  }
 
-  dimension: field_test {
-    type: string
-    sql: {{order_id.name}} ;;
-  }
 }
 
 view: column_names {
@@ -461,4 +469,53 @@ view: dynamic_dimension {
 
 }
 
-explore: dynamic_dimension {}
+explore: dynamic_dimension {
+  hidden: yes
+}
+
+
+explore: order_items_pagination {
+  # fields: [page, number_per_page, detail*]
+}
+
+view: order_items_pagination {
+  extends: [order_items_base]
+
+  derived_table: {
+    sql:
+    select * from public.order_items
+
+    LIMIT {{ number_per_page._parameter_value }}
+    OFFSET {{ number_per_page._parameter_value |
+        times: page._parameter_value | minus: number_per_page._parameter_value }} ;;
+  }
+
+  parameter: page {
+    type: number
+  }
+
+  parameter: number_per_page {
+    type: number
+  }
+
+
+  measure: count {
+    type: count
+  }
+
+  }
+
+view: +order_items_pagination {
+  derived_table: {
+    sql:
+    select * from public.order_items
+    where {% condition select_status %} status {% endcondition %}
+    order by id
+    LIMIT {{ number_per_page._parameter_value }}
+    OFFSET {{ number_per_page._parameter_value | times: page._parameter_value | minus: number_per_page._parameter_value }} ;;
+  }
+
+  filter: select_status {
+    suggest_dimension: status
+  }
+}

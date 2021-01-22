@@ -1,34 +1,24 @@
 connection: "thelook_events_redshift"
 
 # include all the views
-include: "*.view"
-
-# include all the dashboards
-include: "*.dashboard"
-
-
+include: "./ecommerce_views/*.view"
+include: "./dashboards/*.dashboard"
+include: "./code_tests/*.view"
 
 datagroup: new_eric_sandbox_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
-  max_cache_age: "4 hour"
-}
-
-fiscal_month_offset: 3
-
-map_layer: gender_map_layer {
-  format: topojson
-  property_key: "sex"
-  file: "gender_map.topojson"
+  max_cache_age: "8 hour"
 }
 
 persist_with: new_eric_sandbox_default_datagroup
 
-explore: another_product {
-  from:  products
+label: "tREF Sandbox"
+
+map_layer: gender_map_layer {
+  file: "./map/gender_map.topojson"
 }
 
 explore: products {
-  label: "Product Analysis - Changed"
+  label: "Product Analysis"
 
   join: inventory_items {
     type: inner
@@ -37,25 +27,24 @@ explore: products {
   }
 }
 
-# explore: inventory_items {
-#   join: products {
-#     type: left_outer
-#     sql_on: ${inventory_items.product_id} = ${products.id} ;;
-#     relationship: many_to_one
-#   }
-#
-#   join: distribution_centers {
-#     type: left_outer
-#     fields: [distribution_centers.name]
-#     sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
-#     relationship: many_to_one
-#   }
-#
-# }
+explore: inventory_items {
+  join: products {
+    type: left_outer
+    sql_on: ${inventory_items.product_id} = ${products.id} ;;
+    relationship: many_to_one
+  }
 
-explore: new_order_items {
-  view_name: order_items
-  fields: [ALL_FIELDS*, -next_order.created_at_date]
+  join: distribution_centers {
+    type: left_outer
+    fields: [distribution_centers.name]
+    sql_on: ${products.distribution_center_id} = ${distribution_centers.id} ;;
+    relationship: many_to_one
+  }
+
+}
+
+explore: order_items {
+  fields: [ALL_FIELDS*, -next_order.next_order_exclusions*]
   join: users {
     type: left_outer
     sql_on: ${order_items.user_id} = ${users.id} ;;
@@ -125,16 +114,17 @@ explore: users {
     sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
     relationship: many_to_one
   }
-  # join: user_order_ltd {
-  #   sql_on: ${user_order_ltd.user_id}=${users.id} ;;
-  #   relationship: one_to_one
-  # }
+  join: user_order_ltd {
+    sql_on: ${user_order_ltd.user_id}=${users.id} ;;
+    relationship: one_to_one
+  }
 }
 
 explore: cohort_orders_example {
+  hidden: yes
   label: "Cohort Example"
   from: order_items
-  fields: [ALL_FIELDS*] #, -users.cust_with_orders]
+#   fields: [ALL_FIELDS*]
   view_name: cohort_orders_example
   view_label: "Order Items"
   join: users {
@@ -163,11 +153,40 @@ explore: cohort_orders_example {
     relationship: many_to_one
   }
 
-  join: test_cohort  {
+  join: test_cohort {
     view_label: "XX - Cohort Selections"
-    type: left_outer
+    type: inner
     sql_on: ${users.id} = ${test_cohort.user_id} ;;
     relationship: many_to_one
   }
+}
 
+explore: test {
+  hidden: yes
+}
+
+explore: new_inventory {
+  view_name: inventory_items
+  join: order_items {
+    type: left_outer
+    relationship: one_to_many
+    sql: left join
+          {% if order_items.id._in_query or order_items.shipped_date._in_query %} ${order_items.SQL_TABLE_NAME}
+          {% else %}
+          ${order_summary.SQL_TABLE_NAME} as order_items
+            {% endif %}
+            on order_items.inventory_item_id = inventory_items.id
+          ;;
+  }
+}
+
+explore: user_order_fact {
+  fields: [ALL_FIELDS*, -next_order.created_at_date]
+  join: next_order {
+    from: user_order_fact
+    sql_on: ${next_order.user_id}=${user_order_fact.user_id}
+      and ${user_order_fact.order_sequence}=${next_order.order_sequence}-1 ;;
+    relationship: one_to_one
+    fields: [next_order.created_at_date, next_order.order_id]
+  }
 }

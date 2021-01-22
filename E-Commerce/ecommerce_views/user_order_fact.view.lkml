@@ -60,15 +60,9 @@ view: user_order_fact {
   set: detail {
     fields: [user_id, order_id, created_at_time, order_sequence]
   }
-}
 
-explore: user_order_fact {
-  fields: [ALL_FIELDS*, -next_order.created_at_date]
-  join: next_order {
-    from: user_order_fact
-    sql_on: ${next_order.user_id}=${user_order_fact.user_id}
-    and ${user_order_fact.order_sequence}=${next_order.order_sequence}-1 ;;
-    relationship: one_to_one
-    fields: [next_order.created_at_date, next_order.order_id]
+  set: next_order_exclusions {
+    fields: [order_id, created_at_date, created_at_day_of_month, created_at_day_of_week, created_at_day_of_week_index, created_at_day_of_year
+      , created_at_hour, created_at_hour_of_day, created_at_minute]
   }
 }

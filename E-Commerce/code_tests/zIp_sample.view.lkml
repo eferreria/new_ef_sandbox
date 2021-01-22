@@ -22,5 +22,3 @@ view: zip_sample {
     sql: ${TABLE}.Visit ;;
   }
 }
-
-explore: zip_sample {}

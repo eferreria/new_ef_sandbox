@@ -1,5 +1,3 @@
-explore: parameterized_periods {}
-
 view: parameterized_periods {
   sql_table_name: order_items ;;
 
