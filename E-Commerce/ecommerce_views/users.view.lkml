@@ -193,6 +193,11 @@ drill_fields: [id, created_date]
 #     html:  <a style="font-size: 40px;" href="{{link}}" target="_self"><font color="blue">{{value}}</font></a> ;;
   }
 
+  measure: is_count_error {
+    type: yesno
+    sql: ${count} < ${youngest} ;;
+  }
+
 
   measure: average_days_since_signup {
     type: average
