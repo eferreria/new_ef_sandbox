@@ -86,7 +86,7 @@ explore: order_items {
 
 }
 
-
+# {
 # view: t {derived_table:{sql:select null;;}}
 # explore: km_test {
 #   view_name: t
@@ -104,20 +104,24 @@ explore: order_items {
 # #     sql_table_name: ${another_source.SQL_TABLE_NAME} ;;
 #   }
 # }
+# }
 
 explore: users {
+  fields: [ALL_FIELDS*, -order_items.exclude_inventory_item_fields*]
+
   join: order_items {
     sql_on: ${order_items.user_id}=${users.id};;
     relationship: many_to_one
   }
   join: inventory_items {
+    fields: []
     sql_on: ${order_items.inventory_item_id}=${inventory_items.id};;
     relationship: many_to_one
   }
-  join: user_order_ltd {
-    sql_on: ${user_order_ltd.user_id}=${users.id} ;;
-    relationship: one_to_one
-  }
+  # join: user_order_ltd {
+  #   sql_on: ${user_order_ltd.user_id}=${users.id} ;;
+  #   relationship: one_to_one
+  # }
 }
 
 explore: cohort_orders_example {

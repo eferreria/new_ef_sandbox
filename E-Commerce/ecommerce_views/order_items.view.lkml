@@ -419,6 +419,10 @@ view: order_items {
     drill_fields: [detail*]
   }
 
+  set: exclude_inventory_item_fields {
+    fields: [total_cost, gross_margin, gross_margin_pct, avg_gross_margin, avg_cost]
+  }
+
 
 }
 
@@ -439,7 +443,6 @@ explore: column_names { hidden:yes}
 view: dynamic_dimension {
   derived_table: {
     sql: select {{user_input_dynamic_dim._parameter_value}} as dim_1 from public.order_items
-          where created_at between {% date_start custom_date %} and {% date_end custom_date %}
           ;;
   }
 

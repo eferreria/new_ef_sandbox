@@ -198,7 +198,6 @@ drill_fields: [id, created_date]
     sql: ${count} < ${youngest} ;;
   }
 
-
   measure: average_days_since_signup {
     type: average
     sql: 1.0*${days_since_signup} ;;
@@ -208,13 +207,6 @@ drill_fields: [id, created_date]
     type: average
     sql: 1.0*${months_since_signup} ;;
   }
-
-  # measure: cust_with_orders {
-  #   label: "Total Customers with Orders"
-  #   description: "Number of customers that had placed an order"
-  #   type: count_distinct
-  #   sql: ${order_items.user_id} ;;
-  # }
 
   measure: youngest {
     label: "Youngest Customer"
@@ -226,6 +218,53 @@ drill_fields: [id, created_date]
     label: "Oldest Customer"
     type: max
     sql: ${age} ;;
+  }
+
+  measure: measure_compare {
+    type: yesno
+    sql:
+    {% if measure_picker_1._parameter_value == 'count' %} ${count}
+    {% elsif measure_picker_1._parameter_value == 'young' %}  ${youngest}
+    {% elsif measure_picker_1._parameter_value == 'oldest' %}  ${oldest}
+    {% endif %}
+
+    {% if measure_logic_test._parameter_value == 'greater' %} >
+    {% elsif measure_logic_test._parameter_value == 'less' %} <
+    {% elsif measure_logic_test._parameter_value == 'equal' %} =
+    {% endif %}
+
+    {% if measure_picker_2._parameter_value == 'count' %} ${count}
+    {% elsif measure_picker_2._parameter_value == 'young' %} ${youngest}
+    {% elsif measure_picker_2._parameter_value == 'oldest' %} ${oldest}
+    {% endif %}
+    ;;
+  }
+
+
+
+
+  parameter: measure_picker_1 {
+    type: unquoted
+    default_value: "count"
+    allowed_value: { label: "Count" value: "count" }
+    allowed_value: { label: "Youngest" value: "young" }
+    allowed_value: { label: "Oldest" value: "oldest" }
+  }
+
+  parameter: measure_picker_2 {
+    type: unquoted
+    default_value: "count"
+    allowed_value: { label: "Count" value: "count" }
+    allowed_value: { label: "Youngest" value: "young" }
+    allowed_value: { label: "Oldest" value: "oldest" }
+  }
+
+  parameter: measure_logic_test {
+    type: unquoted
+    default_value: "greater"
+    allowed_value: { label: ">" value: "greater" }
+    allowed_value: { label: "<" value: "less" }
+    allowed_value: { label: "=" value: "equal" }
   }
 
   parameter: code_type_picker_1 {
