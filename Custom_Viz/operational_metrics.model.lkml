@@ -4,6 +4,7 @@ connection: "biquery_publicdata_standard_sql"
 # updating the qa_branch
 # changes for today
 # changes again
+# Advanced Deploy Mode on
 
 
 #Adding more changes, changed fiscal offset
