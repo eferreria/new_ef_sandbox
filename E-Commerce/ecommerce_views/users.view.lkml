@@ -126,6 +126,13 @@ drill_fields: [id, created_date]
     sql: ${TABLE}.last_name ;;
   }
 
+  dimension: store_location {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+    html: {{ city._value }} ;;
+  }
+
   dimension: latitude {
     type: number
     sql: ${TABLE}.latitude ;;
@@ -137,6 +144,7 @@ drill_fields: [id, created_date]
   }
 
   dimension: state {
+    map_layer_name: us_states
     type: string
     sql: ${TABLE}.state ;;
   }
