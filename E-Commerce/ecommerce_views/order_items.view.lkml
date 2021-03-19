@@ -399,7 +399,7 @@ view: order_items {
   }
 
   measure: total_orders {
-    label: "Total Orders - Test"
+    label: "Total Orders"
     type: count_distinct
     sql: ${order_id} ;;
     drill_fields: [detail*]
