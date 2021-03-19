@@ -44,6 +44,11 @@ explore: inventory_items {
 }
 
 explore: order_items {
+  query: brand_summary {
+    dimensions: [products.brand]
+    measures: [order_items.total_orders, order_items.total_customers]
+  }
+
   fields: [ALL_FIELDS*, -next_order.next_order_exclusions*]
   join: users {
     type: left_outer
