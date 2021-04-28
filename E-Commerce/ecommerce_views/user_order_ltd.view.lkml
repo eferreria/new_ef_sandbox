@@ -1,17 +1,28 @@
 # If necessary, uncomment the line below to include explore_source.
 # include: "new_ef_sandbox.model.lkml"
 
-
+explore: user_order_ltd {}
 view: user_order_ltd {
   label: "User Lifetime Orders"
   derived_table: {
-    explore_source: order_items {
-      column: total_orders {}
-      column: total_gross_revenue {}
-      column: total_sales {}
-      column: min_order_date {}
-      column: max_order_date {}
-      column: user_id {}
+    # explore_source: order_items {
+    #   column: total_orders {}
+    #   column: total_gross_revenue {}
+    #   column: total_sales {}
+    #   column: min_order_date {}
+    #   column: max_order_date {}
+    #   column: user_id {}
+
+    sql: SELECT
+    order_items.user_id  AS user_id,
+    COUNT(DISTINCT order_items.order_id ) AS total_orders,
+    COALESCE(SUM(CASE WHEN NOT COALESCE(order_items.status in ('Cancelled', 'Returned'), FALSE) THEN order_items.sale_price  ELSE NULL END), 0) AS total_gross_revenue,
+    COALESCE(SUM(order_items.sale_price ), 0) AS total_sales,
+    min(trunc(order_items.created_at)) AS min_order_date,
+    max(trunc(order_items.created_at)) AS max_order_date
+    FROM public.order_items  AS order_items
+
+    GROUP BY 1 ;;
     }
 # sql: SELECT
 #   order_items.user_id  AS user_id,
@@ -21,9 +32,9 @@ view: user_order_ltd {
 #   min(trunc(order_items.created_at)) AS min_order_date,
 #   max(trunc(order_items.created_at)) AS max_order_date
 # FROM public.order_items  AS order_items
-#
+
 # GROUP BY 1 ;;
-  }
+
   dimension: total_orders {
     type: number
     sql: nullif(${TABLE}.total_orders,0) ;;

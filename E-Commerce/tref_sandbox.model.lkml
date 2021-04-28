@@ -49,6 +49,11 @@ explore: order_items {
     measures: [order_items.total_orders, order_items.total_customers]
   }
 
+  access_filter: {
+    field: products.brand
+    user_attribute: brand
+  }
+
   fields: [ALL_FIELDS*, -next_order.next_order_exclusions*]
   join: users {
     type: left_outer
