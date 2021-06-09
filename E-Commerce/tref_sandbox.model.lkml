@@ -134,6 +134,19 @@ explore: users {
   # }
 }
 
+explore: custom_map {
+  from: users
+  fields: [custom_map.region_selector, custom_map.city, custom_map.state,
+    custom_map.region_selector_filter, custom_map.zip, custom_map.region_selector_color, custom_map.market_region
+    , hospital_locations.all_hosp_loc*
+    ]
+
+  join: hospital_locations {
+    sql_on:  ${custom_map.zip} = ${hospital_locations.zip};;
+    relationship: many_to_one
+  }
+}
+
 explore: cohort_orders_example {
   hidden: yes
   label: "Cohort Example"
@@ -204,3 +217,6 @@ explore: user_order_fact {
     fields: [next_order.created_at_date, next_order.order_id]
   }
 }
+
+
+explore: geo_user_summary {}

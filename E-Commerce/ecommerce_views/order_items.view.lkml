@@ -522,3 +522,299 @@ view: +order_items_pagination {
     suggest_dimension: status
   }
 }
+
+
+
+# view: sample_2 {
+#   dimension: date_time_period_selected_label {
+#     view_label: "Calendar"
+#     hidden: yes
+#     label: "Date Time Period Selected"
+#     description: "The time period you have selected"
+#     case: {
+#       when: {sql:'{{date_time_periods._parameter_value}}'='today';; label: "Today"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='yesterday';; label: "Yesterday"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='month_to_date';; label: "Month to Date"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='last_month';; label: "Last Month"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='quarter_to_date';; label: "Quarter to Date"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='year_to_date';; label: "Year to Date"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='trailing_7_days';; label: "Trailing 7 Days"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='trailing_14_days';; label: "Trailing 14 Days"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='trailing_30_days';; label: "Trailing 30 Days"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='trailing_60_days';; label: "Trailing 60 Days"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='trailing_90_days';; label: "Trailing 90 Days"}
+#       when: {sql:'{{date_time_periods._parameter_value}}'='0';; label: "Custom Time Range"}
+#       else: "none"
+#     }
+#     sql: {% if date_time_periods._parameter_value == '0'%}
+#         1=1
+#         {% elsif date_time_periods._parameter_value == 'today'%}
+#         timestamp_trunc(${created_raw} ,day) = timestamp_trunc(timestamp_trunc(current_timestamp, day, "America/Chicago"),day)
+#         {% elsif date_time_periods._parameter_value == 'yesterday'%}
+#         timestamp_trunc(${created_raw} ,day) = timestamp_trunc(timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -1 day),day)
+
+#           {% elsif date_time_periods._parameter_value == 'last_month'%}
+#         cast(timestamp_trunc(${created_raw} ,month) as timestamp) = cast(date_add(date_trunc(current_date, month), interval -1 month) as timestamp)
+
+
+#         {% elsif date_time_periods._parameter_value == 'month_to_date' %}
+#         date_trunc(${created_date} , month) = date_trunc(date_add(${date_to_check}, interval -1 day), month)
+#           and ${created_day_of_month} < extract(DAY from ${date_to_check})
+
+#         {% elsif date_time_periods._parameter_value == '15' %}
+#         cast(timestamp_trunc(${created_raw} ,month) as date) = date_add(date_trunc(current_date, month), interval -1 month)
+
+#         {% elsif date_time_periods._parameter_value == 'quarter_to_date' %}
+#         date_trunc(${created_date}, quarter) = date_trunc(${date_to_check}, quarter)
+#         and ${created_day_of_year} < extract(DAYOFYEAR from ${date_to_check})
+
+#         {% elsif date_time_periods._parameter_value == 'year_to_date' %}
+#         extract(YEAR from ${created_raw}) = extract(YEAR FROM ${date_to_check})
+#         and ${created_day_of_year} < extract(DAYOFYEAR from ${date_to_check})
+
+#         {% elsif date_time_periods._parameter_value == 'trailing_7_days' %}
+#         ${created_date} >= date_add(cast(${date_to_check} as date), interval -7 day) and ${created_date} < date_add(date_add(cast(${date_to_check} as date), interval -7 day), interval 7 day)
+#         {% elsif date_time_periods._parameter_value == 'trailing_14_days' %}
+#         ${created_date} >= date_add(${date_to_check}, interval -14 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -14 day), interval 14 day)
+#         {% elsif date_time_periods._parameter_value == 'trailing_30_days' %}
+#         ${created_date} >= date_add(${date_to_check}, interval -30 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -30 day), interval 30 day)
+#         {% elsif date_time_periods._parameter_value == 'trailing_60_days' %}
+#         ${created_date} >= date_add(${date_to_check}, interval -60 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -60 day), interval 60 day)
+#         {% elsif date_time_periods._parameter_value == 'trailing_90_days' %}
+#         ${created_date} >= date_add(${date_to_check}, interval -90 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -90 day), interval 90 day)
+#         {% else %}
+#         0=1
+#         {% endif %} ;;
+#   }
+#   dimension: selected_date_range {
+#     label: "{% if selected_date_range._in_query %}{{ order_item_complete.date_time_periods._parameter_value | replace:'_',' ' | capitalize }}{%else%}Selected Date Range{%endif%}"
+#     type: string
+#     hidden: yes
+#     sql: concat(${reporting_period_min_date},' to ',${reporting_period_max_date}) ;;
+#   }
+#   dimension: reporting_period_max_date {
+
+#     convert_tz: no
+# #     hidden: yes
+#     hidden: yes
+#     type: date
+#     sql:cast(
+#       {% if date_time_periods._parameter_value == 'last_month' %}
+#       date_add(date_trunc(current_date, month), interval -1 DAY)
+#       {% else %}
+#       timestamp_trunc(current_timestamp, day)--#all ranges end with < 0:00 of current_Date
+#       {% endif %}
+#       as timestamp)
+#       ;;
+#   }
+#   dimension: reporting_period_min_date {
+#     convert_tz: no
+# #     hidden: yes
+#     hidden: yes
+#     type: date
+#     sql:
+#     {% if date_time_periods._parameter_value == '0'%}
+#     current_timestamp
+#   {% elsif date_time_periods._parameter_value == 'today' %}
+#       timestamp_trunc(current_timestamp, day, "America/Chicago")
+#     {% elsif date_time_periods._parameter_value == 'yesterday' %}
+#     timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -1 day)
+#     {% elsif date_time_periods._parameter_value == 'last_month' %}
+#     date_add(date_trunc(current_date, month), interval -1 MONTH)
+#     {% elsif date_time_periods._parameter_value == 'month_to_date' %}
+#     timestamp_trunc(current_timestamp, month)
+#     {% elsif date_time_periods._parameter_value == 'quarter_to_date' %}
+#     timestamp_trunc(current_timestamp, quarter)
+#     {% elsif date_time_periods._parameter_value == 'year_to_date' %}
+#     timestamp_trunc(current_timestamp, year)
+#     -- Need to update this Year to date logic
+#     {% elsif date_time_periods._parameter_value == '11' %}
+#     date_add(date_add(timestamp_trunc(current_timestamp, month), interval 1 month), interval -1 day)
+#     {% elsif date_time_periods._parameter_value == 'trailing_7_days' %}
+#     timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -7 day)
+#     {% elsif date_time_periods._parameter_value == 'trailing_14_days' %}
+#     timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -14 day)
+#     {% elsif date_time_periods._parameter_value == 'trailing_30_days' %}
+#     timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -30 day)
+#     {% elsif date_time_periods._parameter_value == 'trailing_60_days' %}
+#   timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -60 day)
+#     {% elsif date_time_periods._parameter_value == 'trailing_90_days' %}
+#     timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -90 day)
+#     {% else %}
+#     current_timestamp
+#     {% endif %}
+#     ;;
+#   }
+
+#   sql_table_name: OrderItem_Complete
+#     ;;
+
+
+#   dimension: is_in_reporting_period_test {
+# #     hidden: yes
+# #     type: string
+#     # /* {% elsif created_date._is_filtered AND date_time_periods._parameter_value == '0' %}
+#     # 1=1 */
+#     hidden: no
+#     type: yesno #km 8/24
+#     view_label: "Calendar"
+#     label: "Date Time Period - Required For Date Time Period"
+#     description: "Must be yes when you are using the drop down of dates"
+#     sql:
+#       {% if date_time_periods._parameter_value == '0'%}
+#       1=1
+
+#     {% elsif date_time_periods._parameter_value == 'today'%}
+#       timestamp_trunc(${created_raw} ,day) = timestamp_trunc(timestamp_trunc(current_timestamp, day, "America/Chicago"),day)
+#       and  cast(extract (hour from ${TABLE}.OrderCompletedOnStoreLocalTime) as INT64) <= extract(hour from current_time("America/Chicago"))
+#       and extract(hour from  OrderCompletedOnStoreLocalTime) * 60 + extract(minute from OrderCompletedOnStoreLocalTime) <= (extract(hour from current_time("America/Chicago")) * 60 + extract(minute from current_time("America/Chicago")))
+
+#       {% elsif date_time_periods._parameter_value == 'yesterday'%}
+#       timestamp_trunc(${created_raw} ,day) = timestamp_trunc(timestamp_add(timestamp_trunc(current_timestamp, day, "America/Chicago"), interval -1 day),day)
+
+#         {% elsif date_time_periods._parameter_value == 'last_month'%}
+#       cast(timestamp_trunc(${created_raw} ,month) as timestamp) = cast(date_add(date_trunc(current_date, month), interval -1 month) as timestamp)
+
+
+#       {% elsif date_time_periods._parameter_value == 'month_to_date' %}
+#       date_trunc(${created_date} , month) = date_trunc(date_add(${date_to_check}, interval -1 day), month)
+#       and ${created_day_of_month} < extract(DAY from ${date_to_check})
+
+#       {% elsif date_time_periods._parameter_value == '15' %}
+#       cast(timestamp_trunc(${created_raw} ,month) as date) = date_add(date_trunc(current_date, month), interval -1 month)
+
+#       {% elsif date_time_periods._parameter_value == 'quarter_to_date' %}
+#       date_trunc(${created_date}, quarter) = date_trunc(${date_to_check}, quarter)
+#       and ${created_day_of_year} < extract(DAYOFYEAR from ${date_to_check})
+
+#       {% elsif date_time_periods._parameter_value == 'year_to_date' %}
+#       extract(YEAR from ${created_raw}) = extract(YEAR FROM ${date_to_check})
+#       and ${created_day_of_year} < extract(DAYOFYEAR from ${date_to_check})
+
+#       {% elsif date_time_periods._parameter_value == 'trailing_7_days' %}
+#       ${created_date} >= date_add(cast(${date_to_check} as date), interval -7 day) and ${created_date} < date_add(date_add(cast(${date_to_check} as date), interval -7 day), interval 7 day)
+#       {% elsif date_time_periods._parameter_value == 'trailing_14_days' %}
+#       ${created_date} >= date_add(${date_to_check}, interval -14 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -14 day), interval 14 day)
+#       {% elsif date_time_periods._parameter_value == 'trailing_30_days' %}
+#       ${created_date} >= date_add(${date_to_check}, interval -30 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -30 day), interval 30 day)
+#       {% elsif date_time_periods._parameter_value == 'trailing_60_days' %}
+#       ${created_date} >= date_add(${date_to_check}, interval -60 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -60 day), interval 60 day)
+#       {% elsif date_time_periods._parameter_value == 'trailing_90_days' %}
+#       ${created_date} >= date_add(${date_to_check}, interval -90 day) and ${created_date} < date_add(date_add(${date_to_check}, interval -90 day), interval 90 day)
+#       {% else %}
+#       0=1
+#       {% endif %}
+
+#         ;;
+#   }
+
+#   dimension: is_in_previous_period {
+# #     type: string
+#   view_label: "Z. Drill Fields For Dashboarding Only"
+#   group_label: "Peer Group"
+#   hidden: no
+#   type: yesno
+# #     sql:
+# #     {% if include_previous_period._parameter_value == '0' %}
+# #     1=1
+# #     {% elsif date_time_periods._parameter_value == 'yesterday' %}
+# #     ${created_date} = date_add(current_date, interval -2 day)
+# #     {% elsif date_time_periods._parameter_value == 'month_to_date' %}
+# #     date_trunc(${created_date}, month) = date_add(date_trunc(current_date, month), interval -1 month)
+# #     {% elsif date_time_periods._parameter_value == 'quarter_to_date' %}
+# #     DATE_TRUNC(${created_date}, QUARTER) = date_add(date_trunc(current_date, QUARTER), interval -1 QUARTER)
+# #     {% elsif date_time_periods._parameter_value == 'year_to_date' %}
+# #     extract(YEAR from ${created_raw}) = extract(YEAR FROM date_add(current_date, interval -1 year))
+# #     {% elsif date_time_periods._parameter_value == 'trailing_7_days' %}
+# #     ${created_date} >= date_add(current_date, interval -14 day) and ${created_date} < date_add(date_add(current_date, interval -14 day), interval 7 day)
+# #     {% elsif date_time_periods._parameter_value == 'trailing_14_days' %}
+# #     ${created_date} >= date_add(current_date, interval -28 day) and ${created_date} < date_add(date_add(current_date, interval -28 day), interval 14 day)
+# #     {% elsif date_time_periods._parameter_value == 'trailing_30_days' %}
+# #     ${created_date} >= date_add(current_date, interval -60 day) and ${created_date} < date_add(date_add(current_date, interval -60 day), interval 30 day)
+# #     {% endif %}
+# #     ;;
+#   sql:
+
+#     ${created_raw}>=cast(${same_date_range_finder.selected_period_start_previous_comp_date} as timestamp)
+#     and
+#     ${created_raw}<cast(${same_date_range_finder.selected_period_end_previous_comp_date} as timestamp)
+#     ;;
+#     # {% if date_time_periods._parameter_value == 'yesterday' %}
+#     # {%else%}
+#     #
+#     # {%endif%}
+
+#   }
+
+#   dimension: period {
+#     hidden: no
+#     label: "Pivot to See Current vs Prior Period"
+#     view_label:"Z. Drill Fields For Dashboarding Only"
+#     description: "Used for Period over Period Analysis"
+#     type: string
+#     sql: case when ${is_in_reporting_period_test} =  true then 'Current Period'
+#           else 'Previous Period'
+#           end;;
+#   }
+
+#   parameter: reporting_period_start_date {
+#     # Trial Remnant
+#     hidden: yes
+#     type: date
+#   }
+#   parameter: reporting_period_end_date {
+#     type: date
+#     # Trial Remnant
+#     hidden: yes
+#   }
+#   parameter: date_time_periods{
+#     view_label: "Calendar"
+#     type: unquoted
+#     #default_value: "yesterday"
+#     allowed_value: { label: "Today" value: "today" }
+#     allowed_value: { label: "Yesterday" value: "yesterday" }
+#     allowed_value: { label: "Month to Date" value: "month_to_date" }
+#     allowed_value: { label: "Last Month" value: "last_month" }
+#     allowed_value: { label: "Quarter to Date" value: "quarter_to_date" }
+#     allowed_value: { label: "Year to Date" value: "year_to_date" }
+#     allowed_value: { label: "Trailing 7 Days" value: "trailing_7_days" }
+#     allowed_value: { label: "Trailing 14 Days" value: "trailing_14_days" }
+#     allowed_value: { label: "Trailing 30 Days" value: "trailing_30_days" }
+#     allowed_value: { label: "Trailing 60 Days" value: "trailing_60_days" }
+#     allowed_value: { label: "Trailing 90 Days" value: "trailing_90_days" }
+#     allowed_value: { label: "Custom Date Range" value: "0" }
+#   }
+
+#   parameter: include_previous_period {
+#     type: unquoted
+#     view_label: "Z. Drill Fields For Dashboarding Only"
+#     default_value: "0"
+#     allowed_value: { label: "Yes" value: "1"}
+#     allowed_value: { label: "No" value: "0"}
+#   }
+
+#   parameter: special_store_selection {
+#     view_label: "Z. Drill Fields For Dashboarding Only"
+#     type: string
+#     hidden: no
+#   }
+
+#   parameter: comparison_group_selection {
+#     view_label: "Z. Drill Fields For Dashboarding Only"
+#     default_value: "0"
+#     allowed_value: { label: "Store Age" value: "age_group" }
+#     allowed_value: { label: "Store Market" value: "market"}
+#     hidden: no
+#   }
+
+#   parameter: calendar_or_same_day {
+#     view_label: "Calendar"
+#     type: unquoted
+#     default_value: "calendar"
+#     allowed_value: { label: "Calendar Day"  value: "calendar"}
+#     allowed_value: { label: "Same Day" value: "same_day"}
+#     hidden: yes
+#   }
+
+
+# }

@@ -53,6 +53,11 @@ drill_fields: [id, created_date]
   #   suggest_dimension: city
   # }
 
+dimension: campaign_name {
+  type: string
+  html: {{ full_name._value }} ;;
+  sql: ${id} ;;
+}
 
   dimension: age {
     type: number
@@ -83,6 +88,7 @@ drill_fields: [id, created_date]
   }
 
   dimension_group: created {
+    convert_tz: no
     type: time
     timeframes: [
       raw,
@@ -112,6 +118,11 @@ drill_fields: [id, created_date]
   dimension: full_name {
     sql: ${id} ;;
     html: {{last_name._value}}, {{first_name._value}} ;;
+  }
+
+  dimension: full_name_2 {
+    sql:  ${last_name} || ', ' || ${first_name};;
+    html: {{id._value}} ;;
   }
 
   dimension: gender {
@@ -188,6 +199,7 @@ drill_fields: [id, created_date]
     sql:  9999999999 ;;
     value_format: "(000) 000-0000"
   }
+
 
   measure: count {
     label: "Total Customers"
@@ -317,7 +329,127 @@ drill_fields: [id, created_date]
       value: "MSDRG"
     }
   }
+  parameter: region_selector {
+    type: unquoted
+    allowed_value: {label: "City" value: "city" }
+    allowed_value: {label: "State" value: "state" }
+    allowed_value: {label: "Market Region" value: "market_region" }
+    allowed_value: {label: "Super Region" value: "super_region" }
+  }
 
+  dimension: region_selector_filter {
+    sql:
+    {% if region_selector._parameter_value == "city" %} ${city}
+    {% elsif region_selector._parameter_value == "state" %} ${state}
+    {% elsif region_selector._parameter_value == "market_region" %} ${market_region}
+    {% elsif region_selector._parameter_value == "super_region" %} ${super_region}
+    {% endif %}
+    ;;
+  }
+
+  dimension: market_region {
+    type: string
+    sql:
+    case
+          when ${city} = 'Chicago' then 'Chicago'
+          when ${city} = 'Evanston' then 'North Chicago'
+          when ${city} = 'Wilmette' then 'North Chicago'
+          when ${city} = 'Winettka' then 'North Chicago'
+          when ${city} = 'Kennilworth' then 'North Chicago'
+          when ${city} = 'Morton Grove' then 'North Central Chicago'
+          when ${city} = 'Park Ridge' then 'North Central Chicago'
+          when ${city} = 'Skokie' then 'North Central Chicago'
+          when ${city} = 'Lincolnwood' then 'North Central Chicago'
+          when ${city} = 'Niles' then 'North Central Chicago'
+          when ${city} = 'Oak Lawn' then 'West Chicago'
+          when ${city} = 'Burbank' then 'West Chicago'
+          when ${city} = 'Evergreen Park' then 'West Chicago'
+          when ${city} = 'Gary' then 'Not Chicago'
+          when ${city} = 'Hammond' then 'Not Chicago'
+          when ${city} = 'East Chicago' then 'Not Chicago'
+        end
+        ;;
+  }
+
+  dimension: super_region {
+    type: string
+    sql:
+    case
+    when ${city} = 'Chicago' then 'Greater Chicago Metro'
+    when ${city} = 'Evanston' then 'North Suburbs'
+    when ${city} = 'Wilmette' then 'North Suburbs'
+    when ${city} = 'Winettka' then 'North Suburbs'
+    when ${city} = 'Kennilworth' then 'North Suburbs'
+    when ${city} = 'Morton Grove' then 'North Suburbs'
+    when ${city} = 'Park Ridge' then 'North Suburbs'
+    when ${city} = 'Skokie' then 'Greater Chicago Metro'
+    when ${city} = 'Lincolnwood' then 'Greater Chicago Metro'
+    when ${city} = 'Niles' then 'Greater Chicago Metro'
+    when ${city} = 'Oak Lawn' then 'Greater Chicago Metro'
+    when ${city} = 'Burbank' then 'Greater Chicago Metro'
+    when ${city} = 'Evergreen Park' then 'Greater Chicago Metro'
+    when ${city} = 'Gary' then 'Greater Chicago Metro'
+    when ${city} = 'Hammond' then 'Greater Chicago Metro'
+    when ${city} = 'East Chicago' then 'Greater Chicago Metro'
+    end
+    ;;
+  }
+
+  measure: region_selector_color {
+    type: number
+    sql:
+    {% if region_selector._parameter_value == "city" %}
+       case
+          when ${city} = 'Chicago' then 100
+          when ${city} = 'Evanston' then 110
+          when ${city} = 'Wilmette' then 110
+          when ${city} = 'Winettka' then 110
+          when ${city} = 'Kennilworth' then 110
+          when ${city} = 'Morton Grove' then 120
+          when ${city} = 'Park Ridge' then 120
+          when ${city} = 'Skokie' then 120
+          when ${city} = 'Lincolnwood' then 120
+          when ${city} = 'Niles' then 120
+          when ${city} = 'Oak Lawn' then 130
+          when ${city} = 'Burbank' then 130
+          when ${city} = 'Evergreen Park' then 130
+          when ${city} = 'Gary' then 90
+          when ${city} = 'Hammond' then 90
+          when ${city} = 'East Chicago' then 90
+        end
+    {% elsif  region_selector._parameter_value == "state" %}
+     case
+      when ${state} = 'Illinois' then 1
+      when ${state} = 'Indiana' then 2
+      when ${state} = 'Michigan' then 3
+    end
+    {% elsif  region_selector._parameter_value == "market_region" %}
+    case
+       when ${city} = 'Chicago' then 1
+          when ${city} = 'Evanston' then 2
+          when ${city} = 'Wilmette' then 2
+          when ${city} = 'Winettka' then 2
+          when ${city} = 'Kennilworth' then 2
+          when ${city} = 'Morton Grove' then 3
+          when ${city} = 'Park Ridge' then 3
+          when ${city} = 'Skokie' then 3
+          when ${city} = 'Lincolnwood' then 3
+          when ${city} = 'Niles' then 3
+          when ${city} = 'Oak Lawn' then 4
+          when ${city} = 'Burbank' then 4
+          when ${city} = 'Evergreen Park' then 4
+          when ${city} = 'Gary' then 5
+          when ${city} = 'Hammond' then 5
+          when ${city} = 'East Chicago' then 5
+    end
+    {% elsif  region_selector._parameter_value == "super_region" %}
+    case
+      when ${super_region} = 'Greater Chicago Metro' then 1
+      when ${super_region} = 'North Suburbs' then 2
+    end
+    {% endif %}
+    ;;
+  }
 }
 
 # view: users_extended {
@@ -340,3 +472,166 @@ drill_fields: [id, created_date]
 #   }
 
 # }
+
+view: geo_user_summary {
+  derived_table: {
+    explore_source: users {
+      column: country {}
+      column: state {}
+      column: city {}
+      column: count {}
+    }
+  }
+  dimension: country {}
+  dimension: state {}
+  dimension: city {}
+  dimension: count {
+    label: "Total Customers"
+    type: number
+  }
+
+  measure: total_customers {
+    type: sum
+    sql: ${count} ;;
+  }
+
+  measure: total_customers_v2 {
+    type: sum_distinct
+    sql: ${count} ;;
+    sql_distinct_key: ${city} ;;
+  }
+
+  measure: state_color {
+    type: number
+    sql:
+    case
+      when ${state} = 'Illinois' then 1
+      when ${state} = 'Wisconsin' then 2
+      when ${state} = 'Michigan' then 3
+    end
+    ;;
+  }
+
+  measure: region_color {
+    type: number
+    sql:
+    case
+      when ${state} = 'Illinois' then
+        case
+          when ${city} = 'Chicago' then 100
+          when ${city} = 'Evanston' then 110
+          when ${city} = 'Skokie' then 120
+        end
+      when ${state} = 'Wisconsin' then 2
+      when ${state} = 'Michigan' then 3
+
+    end
+    ;;
+  }
+
+
+
+
+}
+
+
+# If necessary, uncomment the line below to include explore_source.
+# include: "tref_sandbox.model.lkml"
+
+explore: utilization_example {}
+
+view: utilization_example {
+  derived_table: {
+    explore_source: users {
+      column: created_year { field: order_items.created_year }
+      column: created_month_name { field: order_items.created_month_name }
+      column: state {}
+      column: country {}
+      column: count {}
+      derived_column: all_state_count {
+        sql: sum(count) over (partition by country, created_year, created_month_name )  ;;
+      }
+      filters: {
+        field: users.country
+        value: "USA"
+      }
+    }
+  }
+  dimension: created_year {
+  }
+  dimension: created_month_name {
+  }
+  dimension: state {}
+  dimension: count {
+    label: "Users Total Customers"
+    type: number
+  }
+  dimension: all_state_count {}
+
+  measure: html_fun_with_wrap {
+    type: count
+    html:
+
+<table style="border: 2px solid black; width:100%; table-layout:fixed; white-space:wrap">
+<tr style="height:auto; white-space:wrap">
+<td style="white-space:wrap" nowrap="wrap">
+<p style="white-space:wrap">I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping. I am a long long long line of text. I want to demo word wrapping
+</p>
+    </td>
+    </tr>
+    </table>
+    ;;
+  }
+}
+
+view: hospital_locations {
+  derived_table: {
+    sql:
+    select 100 as id, 'Evanston Hospital' as name, 42.0676294315567 as lat, -87.6834781555956 as long, 'Illinois' as state, 60201 as zip UNION ALL
+select 102, 'Stroger Hospital', 41.874990215672, -87.6725300469567, 'Illinois', 60612 UNION ALL
+select 103, 'Franciscan Health', 41.6190602786367, -87.5233769971789, 'Indiana', 46320 UNION ALL
+select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, 'Illinois', 60453
+;;
+  }
+  drill_fields: [id]
+
+  dimension: id {
+    primary_key: yes
+    type: number
+    sql: ${TABLE}.id ;;
+  }
+
+  dimension: hospital_location {
+    type: location
+    sql_latitude: ${lat} ;;
+    sql_longitude: ${long} ;;
+  }
+
+  dimension: lat {
+    type: number
+    sql: ${TABLE}.lat ;;
+  }
+
+  dimension: long {
+    type: number
+    sql: ${TABLE}.long ;;
+  }
+
+  dimension: name {
+    type: string
+    sql: ${TABLE}.name ;;
+  }
+
+  dimension: state {
+    type: string
+    sql: ${TABLE}.state ;;
+  }
+
+  dimension: zip {
+    type: zipcode
+    sql: cast(${TABLE}.zip as varchar);;
+  }
+  set: all_hosp_loc {
+    fields: [hospital_location, name, state, zip]
+  }
+}

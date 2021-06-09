@@ -804,7 +804,7 @@ measure: steward_progress {
         </tr>
         <tr>
           <td colspan="2">
-            <div style="font-size:14px; text-align:justified; color:{{color1._value}}; overflow-wrap:break-word; word-wrap: break-word;">
+            <div style="font-size:14px; text-align:justified; color:{{color1._value}}; overflow-wrap:break-word; word-wrap: break-word; word-break: break-all;">
               We would like to be saving {{metric_year_goal_percent._rendered_value}} and reinvesting {{reinvesting._rendered_value}}.<br>
               Our strategic funded projects are not part of this consolidated operating net income % calculation. <br>
               This metric is updated once a month and is current for year to date activity through the end of {{event_month_name._rendered_value}}.
@@ -952,8 +952,23 @@ measure: demo_measure {
   ;;
 
   }
+measure: html_fun_2 {
+  type: count
+  html:
+  <table>
+  <tr>
+          <td colspan="2">
+            <div style="font-size:14px; text-align:justified; color:{{color1._value}}; overflow-wrap:break-word; word-wrap: break-word; white-space:wrap;">
+              We would like to be saving {{metric_year_goal_percent._rendered_value}} and reinvesting {{reinvesting._rendered_value}}.<br>
+              Our strategic funded projects are not part of this consolidated operating net income % calculation. <br>
+              This metric is updated once a month and is current for year to date activity through the end of {{event_month_name._rendered_value}}.
+            </div>
+          </td>
+        </tr>
+      </table>
 
-
+  ;;
+}
 
 }
 # end of view
