@@ -168,6 +168,7 @@ dimension: campaign_name {
   dimension: zip {
     type: zipcode
     sql: ${TABLE}.zip ;;
+    drill_fields: [county_fips]
     link: {
       url: "/explore/tref_sandbox/custom_map?toggle=dat,vis&qid=cRsWAPVcwqGZYo1bcz83Y4"
       label: "US County Map Layer"
@@ -652,16 +653,19 @@ view: hospital_locations {
   derived_table: {
     sql:
     select 100 as id, 'Evanston Hospital' as name, 42.0676294315567 as lat, -87.6834781555956 as long, 'Illinois' as state, 60201 as zip
-    , '2650 Ridge Ave' as street_address, 'Evanston' as city
+    , '2650 Ridge Ave' as street_address, 'Evanston' as city, 'Northshore University HealthSystem' as health_system
     UNION ALL
 select 102, 'Stroger Hospital', 41.874990215672, -87.6725300469567, 'Illinois', 60612
-  , '1969 W Ogden Ave', 'Chicago'
+  , '1969 W Ogden Ave', 'Chicago', 'Stroger'
     UNION ALL
 select 103, 'Franciscan Health', 41.6190602786367, -87.5233769971789, 'Indiana', 46320
- , '24 Joliet St', 'Dyer'
+ , '24 Joliet St', 'Dyer', 'Franciscan Health'
 UNION ALL
 select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, 'Illinois', 60453
-, '4400 95th St', 'Oak Lawn'
+, '4400 95th St', 'Oak Lawn', 'Advocate Health'
+UNION ALL
+select 106, 'Advocate Lutheran General Hospital', 42.040436949090726, -87.84828832156786, 'Illinois', 60068
+, '1775 Dempster St', 'Park Ridge', 'Advocate Health'
 ;;
   }
   drill_fields: [id]
@@ -670,6 +674,10 @@ select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, '
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
+  }
+
+  dimension: health_system {
+    type: string
   }
 
   dimension: hospital_location {
@@ -715,6 +723,6 @@ select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, '
     sql: cast(${TABLE}.zip as varchar);;
   }
   set: all_hosp_loc {
-    fields: [hospital_location, name, state, zip, street_address, city, full_address]
+    fields: [hospital_location, name, state, zip, street_address, city, full_address, health_system]
   }
 }
