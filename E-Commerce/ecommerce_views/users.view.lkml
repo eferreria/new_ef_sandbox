@@ -168,6 +168,10 @@ dimension: campaign_name {
   dimension: zip {
     type: zipcode
     sql: ${TABLE}.zip ;;
+    link: {
+      url: "/explore/tref_sandbox/custom_map?toggle=dat,vis&qid=cRsWAPVcwqGZYo1bcz83Y4"
+      label: "US County Map Layer"
+    }
   }
 
   dimension: days_since_signup {
@@ -448,6 +452,59 @@ dimension: campaign_name {
       when ${super_region} = 'North Suburbs' then 2
     end
     {% endif %}
+    ;;
+  }
+  dimension: county {
+    type: string
+    sql:
+     case
+       when ${city} = 'Chicago' then 'Cook'
+          when ${city} = 'Evanston' then 'Cook'
+          when ${city} = 'Wilmette' then 'Cook'
+          when ${city} = 'Winettka' then 'Cook'
+          when ${city} = 'Kennilworth' then 'Cook'
+          when ${city} = 'Morton Grove' then 'Cook'
+          when ${city} = 'Park Ridge' then 'Cook'
+          when ${city} = 'Skokie' then 'Cook'
+          when ${city} = 'Lincolnwood' then 'Cook'
+          when ${city} = 'Niles' then 'Cook'
+          when ${city} = 'Oak Lawn' then 'Cook'
+          when ${city} = 'Burbank' then 'Cook'
+          when ${city} = 'Evergreen Park' then 'Cook'
+          when ${city} = 'Gary' then 'Lake'
+          when ${city} = 'Hammond' then 'Lake'
+          when ${city} = 'East Chicago' then 'Lake'
+    end
+    ;;
+    link: {
+      url: "
+      https://profservices.dev.looker.com/explore/tref_sandbox/custom_map?toggle=dat,fil,vis&qid=1ReMwMpTu4leIaqigf4Vja"
+      label: "US Zip Map Layer"
+    }
+  }
+
+  dimension: county_fips {
+    type: number
+    map_layer_name: us_counties_fips
+    sql:
+     case
+       when ${city} = 'Chicago' then 17031
+          when ${city} = 'Evanston' then 17031
+          when ${city} = 'Wilmette' then 17031
+          when ${city} = 'Winettka' then 17031
+          when ${city} = 'Kennilworth' then 17031
+          when ${city} = 'Morton Grove' then 17031
+          when ${city} = 'Park Ridge' then 17031
+          when ${city} = 'Skokie' then 17031
+          when ${city} = 'Lincolnwood' then 17031
+          when ${city} = 'Niles' then 17031
+          when ${city} = 'Oak Lawn' then 17031
+          when ${city} = 'Burbank' then 17031
+          when ${city} = 'Evergreen Park' then 17031
+          when ${city} = 'Gary' then 18089
+          when ${city} = 'Hammond' then 18089
+          when ${city} = 'East Chicago' then 18089
+    end
     ;;
   }
 }

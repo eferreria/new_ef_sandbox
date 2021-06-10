@@ -137,7 +137,8 @@ explore: users {
 explore: custom_map {
   from: users
   fields: [custom_map.region_selector, custom_map.city, custom_map.state,
-    custom_map.region_selector_filter, custom_map.zip, custom_map.region_selector_color, custom_map.market_region
+    custom_map.region_selector_filter, custom_map.zip, custom_map.region_selector_color,
+    custom_map.market_region, custom_map.county, custom_map.county_fips
     , hospital_locations.all_hosp_loc*
     ]
 
