@@ -507,6 +507,13 @@ dimension: campaign_name {
     end
     ;;
   }
+  measure: covered_lives {
+    type: count
+  }
+
+  set: exposed_fields {
+    fields: [covered_lives]
+  }
 }
 
 # view: users_extended {
@@ -644,10 +651,17 @@ view: utilization_example {
 view: hospital_locations {
   derived_table: {
     sql:
-    select 100 as id, 'Evanston Hospital' as name, 42.0676294315567 as lat, -87.6834781555956 as long, 'Illinois' as state, 60201 as zip UNION ALL
-select 102, 'Stroger Hospital', 41.874990215672, -87.6725300469567, 'Illinois', 60612 UNION ALL
-select 103, 'Franciscan Health', 41.6190602786367, -87.5233769971789, 'Indiana', 46320 UNION ALL
+    select 100 as id, 'Evanston Hospital' as name, 42.0676294315567 as lat, -87.6834781555956 as long, 'Illinois' as state, 60201 as zip
+    , '2650 Ridge Ave' as street_address, 'Evanston' as city
+    UNION ALL
+select 102, 'Stroger Hospital', 41.874990215672, -87.6725300469567, 'Illinois', 60612
+  , '1969 W Ogden Ave', 'Chicago'
+    UNION ALL
+select 103, 'Franciscan Health', 41.6190602786367, -87.5233769971789, 'Indiana', 46320
+ , '24 Joliet St', 'Dyer'
+UNION ALL
 select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, 'Illinois', 60453
+, '4400 95th St', 'Oak Lawn'
 ;;
   }
   drill_fields: [id]
@@ -662,6 +676,18 @@ select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, '
     type: location
     sql_latitude: ${lat} ;;
     sql_longitude: ${long} ;;
+  }
+  dimension: street_address {
+    type: string
+  }
+  dimension: city {
+    type: string
+  }
+  dimension: full_address {
+    type: string
+    sql:
+    ${street_address} ||', ' || ${city} || ', ' || ${state} || ' ' || ${zip}
+    ;;
   }
 
   dimension: lat {
@@ -689,6 +715,6 @@ select 105, 'Advocate Childrens Oak Lawn', 41.7281254209334, -87.731864319817, '
     sql: cast(${TABLE}.zip as varchar);;
   }
   set: all_hosp_loc {
-    fields: [hospital_location, name, state, zip]
+    fields: [hospital_location, name, state, zip, street_address, city, full_address]
   }
 }
