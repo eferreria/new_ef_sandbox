@@ -510,10 +510,11 @@ dimension: campaign_name {
   }
   measure: covered_lives {
     type: count
+    drill_fields: [full_name, email, city, state, market_region]
   }
 
   set: exposed_fields {
-    fields: [covered_lives]
+    fields: [covered_lives, full_name, email, city, state, first_name, last_name]
   }
 }
 
