@@ -343,6 +343,8 @@ dimension: campaign_name {
   }
 
   dimension: region_selector_filter {
+    label: "Selected Region"
+    label_from_parameter: region_selector
     sql:
     {% if region_selector._parameter_value == "city" %} ${city}
     {% elsif region_selector._parameter_value == "state" %} ${state}
@@ -723,7 +725,18 @@ select 106, 'Advocate Lutheran General Hospital', 42.040436949090726, -87.848288
     type: zipcode
     sql: cast(${TABLE}.zip as varchar);;
   }
+
+  measure: total_hospitals {
+    type: count_distinct
+    sql: ${name} ;;
+  }
+
+  measure: total_healthsystems{
+    type: count_distinct
+    sql: ${health_system} ;;
+  }
+
   set: all_hosp_loc {
-    fields: [hospital_location, name, state, zip, street_address, city, full_address, health_system]
+    fields: [hospital_location, name, state, zip, street_address, city, full_address, health_system, total_hospitals, total_healthsystems]
   }
 }
