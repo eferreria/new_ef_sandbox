@@ -2,7 +2,7 @@
 # include: "..//E-Commerce/order*.view"
 
 view: users {
- sql_table_name: public.users ;;
+sql_table_name: public.users ;;
 drill_fields: [id, created_date]
 # derived_table: {
 #   sql:
@@ -11,6 +11,52 @@ drill_fields: [id, created_date]
 #   {% condition city_select %} users.city {% endcondition %}
 #   ;;
 # }
+
+filter: select_date {
+  type: date
+}
+
+dimension: selected_city {
+  type: string
+  sql:
+  case when {% condition city_select %} users.city {% endcondition %}
+  then users.city
+  else 'Other'
+  end
+  ;;
+}
+
+  filter: select_full_name {
+    type: string
+    suggest_dimension: full_name_2
+  }
+
+
+
+  parameter: field_to_select {
+    type: string
+    default_value: "email"
+    allowed_value: { value: "first_name" label: "First Name" }
+    allowed_value: { value: "last_name" label: "Last Name"  }
+    allowed_value: { value: "Full Name"  }
+    allowed_value: { value: "email" label: "Email" }
+  }
+
+  dimension: dynamic_dim {
+    type: string
+    sql:
+    {% if field_to_select._parameter_value == "'first_name'" %} ${first_name}
+    {% elsif field_to_select._parameter_value == "'last_name'" %} ${last_name}
+    {% elsif field_to_select._parameter_value == "'Full Name'" %} ${full_name_2}
+    {% else %} ${email}
+    {% endif %}
+
+    ;;
+    label_from_parameter: field_to_select
+  }
+  # "first_name" AS "users.first_name",
+  #   "last_name" AS "users.last_name",
+  #   "email" AS "users.email"
 
   parameter: user_selected_dimension {
     type: unquoted
@@ -47,11 +93,11 @@ drill_fields: [id, created_date]
     sql: ${TABLE}.id ;;
   }
 
-  # filter: city_select {
-  #   hidden: yes
-  #   type: string
-  #   suggest_dimension: city
-  # }
+  filter: city_select {
+    # hidden: yes
+    type: string
+    suggest_dimension: city
+  }
 
 dimension: campaign_name {
   type: string
@@ -158,6 +204,16 @@ dimension: campaign_name {
     map_layer_name: us_states
     type: string
     sql: ${TABLE}.state ;;
+    html:
+    {% if state._value == 'Illinois' %}
+    <font style="color:blue !important">
+    {{value}}  🔺
+    </font>
+    {% else %}
+    {{value}} 🟩
+    {% endif %}
+    ;;
+
   }
 
   dimension: traffic_source {
@@ -335,7 +391,7 @@ dimension: campaign_name {
     }
   }
   parameter: region_selector {
-    type: unquoted
+    type: string
     allowed_value: {label: "City" value: "city" }
     allowed_value: {label: "State" value: "state" }
     allowed_value: {label: "Market Region" value: "market_region" }
@@ -513,6 +569,15 @@ dimension: campaign_name {
   measure: covered_lives {
     type: count
     drill_fields: [full_name, email, city, state, market_region]
+
+    link: {
+      url: "https://profservices.dev.looker.com/dashboards-next/779"
+      label: "Region Map by Zip"
+    }
+    link: {
+      url: "https://profservices.dev.looker.com/dashboards-next/780"
+      label: "Region Map by County"
+    }
   }
 
   set: exposed_fields {
@@ -736,7 +801,13 @@ select 106, 'Advocate Lutheran General Hospital', 42.040436949090726, -87.848288
     sql: ${health_system} ;;
   }
 
+  measure: hospital_color {
+    type: sum
+    sql: ${id} ;;
+  }
+
   set: all_hosp_loc {
-    fields: [hospital_location, name, state, zip, street_address, city, full_address, health_system, total_hospitals, total_healthsystems]
+    fields: [hospital_location, hospital_color,
+      name, state, zip, street_address, city, full_address, health_system, total_hospitals, total_healthsystems]
   }
 }

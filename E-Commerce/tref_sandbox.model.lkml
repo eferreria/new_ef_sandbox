@@ -49,6 +49,17 @@ explore: order_items {
     measures: [order_items.total_orders, order_items.total_customers]
   }
 
+  query: user_geo_summary {
+    label: "Total US Customers by City, State"
+    description: "Use this starting point query to view total customers and orders in each US City and State"
+    dimensions: [users.state, users.city]
+    measures: [order_items.total_orders, users.count]
+  }
+
+  always_filter: {
+    filters: [users.country: ""]
+  }
+
   access_filter: {
     field: products.brand
     user_attribute: brand
