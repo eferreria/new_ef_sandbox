@@ -28,7 +28,7 @@ view: order_items_base {
   }
 
   filter: period_filter {
-    type: date
+    type: date_time
     description: "Use this filter for current period"
   }
 
@@ -403,6 +403,13 @@ view: order_items {
     type: count_distinct
     sql: ${order_id} ;;
     drill_fields: [detail*]
+    link: {
+      url: "explore/tref_sandbox/order_items?fields=products.category,products.brand,order_items.total_orders&subtotals=products.category
+      &sorts=order_items.total_orders+desc&column_limit=50
+      &vis_config=table
+      &filter_config=%7B%7D&dynamic_fields=%5B%5D&origin=share-expanded
+      &toggle=vis"
+    }
   }
 
   measure: min_order_date {

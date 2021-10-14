@@ -2,7 +2,7 @@ connection: "thelook_events_redshift"
 
 # include all the views
 include: "./ecommerce_views/*.view"
-# include: "./dashboards/*.dashboard"
+include: "./dashboards/*.dashboard"
 include: "./code_tests/*.view"
 
 datagroup: new_eric_sandbox_default_datagroup {
