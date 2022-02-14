@@ -157,7 +157,7 @@ dimension: campaign_name {
   dimension: state {
     map_layer_name: us_states
     type: string
-    sql: ${TABLE}.state ;;
+    sql: ${TABLE}.states ;;
   }
 
   dimension: traffic_source {
@@ -177,7 +177,7 @@ dimension: campaign_name {
 
   dimension: days_since_signup {
     type: number
-    sql: datediff(days, ${created_date}, current_date) ;;
+    sql: datediff(days, ${created_date}, currentdate ;;
   }
 
   dimension: days_since_signup_tier {
@@ -681,6 +681,10 @@ select 106, 'Advocate Lutheran General Hospital', 42.040436949090726, -87.848288
 
   dimension: health_system {
     type: string
+  }
+
+  parameter: xx {
+    type: number
   }
 
   dimension: hospital_location {
