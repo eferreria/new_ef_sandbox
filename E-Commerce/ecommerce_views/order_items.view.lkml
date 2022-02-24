@@ -403,6 +403,10 @@ view: order_items {
     type: count_distinct
     sql: ${order_id} ;;
     drill_fields: [detail*]
+    html:
+    {{rendered_value}} ( {{users.count._value}} )
+    ;;
+
   }
 
   measure: min_order_date {
