@@ -1,6 +1,7 @@
 
 # include: "..//E-Commerce/order*.view"
 
+
 view: users {
  sql_table_name: public.users ;;
 drill_fields: [id, created_date]
@@ -116,11 +117,13 @@ dimension: campaign_name {
   }
 
   dimension: full_name {
+    view_label: "TaT Calculations"
     sql: ${id} ;;
     html: {{last_name._value}}, {{first_name._value}} ;;
   }
 
   dimension: full_name_2 {
+    view_label: "TaT Calculations"
     sql:  ${last_name} || ', ' || ${first_name};;
     html: {{id._value}} ;;
   }
@@ -133,7 +136,9 @@ dimension: campaign_name {
   }
 
   dimension: last_name {
+    view_label: "TaT Calculations"
     type: string
+    description: "This is the last name of the user at time of creation"
     sql: ${TABLE}.last_name ;;
   }
 
@@ -157,7 +162,7 @@ dimension: campaign_name {
   dimension: state {
     map_layer_name: us_states
     type: string
-    sql: ${TABLE}.states ;;
+    sql: ${TABLE}.state ;;
   }
 
   dimension: traffic_source {
@@ -216,6 +221,12 @@ dimension: campaign_name {
 #         _filters['users.state'] | url_encode }}"
 #     }
 #     html:  <a style="font-size: 40px;" href="{{link}}" target="_self"><font color="blue">{{value}}</font></a> ;;
+html:
+<details>
+    <summary>{{rendered_value}}</summary>
+    Something small enough to escape casual notice.
+</details>
+;;
   }
 
   measure: is_count_error {
@@ -733,6 +744,13 @@ select 106, 'Advocate Lutheran General Hospital', 42.040436949090726, -87.848288
   measure: total_hospitals {
     type: count_distinct
     sql: ${name} ;;
+    html:
+  {{rendered_value}} <br>
+  {{ _filters['hospital_locations.state'] }}
+
+
+    ;;
+
   }
 
   measure: total_healthsystems{
